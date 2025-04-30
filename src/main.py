@@ -281,7 +281,7 @@ def deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath
 #PREPARE SOME TOOLBOX PARAMETERS
 sensor = 'S2'
 tilename = 'T32TPR' # must match with tile type in the downloaded sentinel data.
-years = ['2018']
+years = ['2018', '2019']
 maindir = '.'
 boscopath = 'bosco'
 datapath = 'data'
