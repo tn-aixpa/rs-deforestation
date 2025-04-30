@@ -1,0 +1,88 @@
+ai: NLP
+domain: PA
+usages: ./docs/usage.md
+metadata:
+  name: FamilyAudit-Classifier
+  description: >
+    A multiclass sequence classifier based on BERT base Italian, fine-tuned on corpora
+    from municipalities and organizations. It predicts labels from a taxonomy to
+    categorize Family Audit plans given a title, description, and objective. The model
+    is designed for further fine-tuning on new data, including domains outside of the Family Audit's. 
+  kind: product-template
+  ai: NLP
+  domain: PA
+  license: Apache License 2.0
+model:
+  base_model: bert-base-italian-xxl-cased
+  type: Multiclass sequence classifier
+  fine_tuning: Supported
+  input:
+    - title + description + objective
+  output:
+    - label
+  purpose: >
+    To suggest one or more labels from the taxonomy needed to categorize Family Audit plans.
+usage:
+  target_users:
+    - PA operators (municipalities, regional operators, etc.)
+  applications:
+    - Suggesting taxonomy labels for Family Audit plans by facilitating AI integration in PA-user interfaces.
+  documentation_links:
+    - usage: ./docs/usage.md
+howto:
+  - title: Log data for training
+    ref: ./docs/howto/process.md
+  - title: Train the classifier model
+    ref: ./docs/howto/train.md
+  - title: Expose the classifed model as a service
+    ref: ./docs/howto/expose.md
+datasets:
+  - id: train-data-it
+    name: Training data
+    kind: artifact
+models:
+  - id: document-classifier
+    kind: huggingface
+    name: document classifier
+operations:
+  - id: train
+    name: Train the classifier model
+    kind: job
+    task: training
+    implementation:
+      framework: aixpa
+      spec:
+        kind: python 
+        code_src: "git+https://github.com/tn-aixpa/faudit-classifier" 
+        handler: "src.train:train"
+        python_version: PYTHON3_10
+        requirements: "accelerate==1.1.1", "datasets==3.1.0", "torch==2.5.1", "torch_tensorrt==2.5.0", "torchmetrics==1.6.0", "torchtext==0.18.0", "transformer_engine==1.12.0", "transformer_engine_cu12==1.12.0", "transformers==4.46.3", "pandas==2.2.3", "numpy==2.1.3", "numpyencoder==0.3.0", "scikit-learn==1.5.2", "scipy==1.14.1", "GitPython==3.1.43", "attrs==24.2.0", "async-timeout==5.0.1", "aiosignal==1.3.1", "aiohappyeyeballs==2.4.4", "aiohttp==3.11.9", "Unidecode==1.3.8"
+    inputs:
+      - train-data
+    outputs:
+      - document-classifier
+deployments:
+  - id: serve
+    name: Expose the classifed model as a custom API
+    kind: service
+    implementation:
+      framework: aixpa
+      spec:
+        kind: python 
+        code_src: "git+https://github.com/tn-aixpa/faudit-classifier" 
+        handler: "src.serve:serve"
+        init_function: init
+        python_version: PYTHON3_10
+        requirements: "numpy<2", "pandas==2.1.4","transformer_engine==1.12.0", "transformer_engine_cu12==1.12.0", "transformers==4.46.3", "torch==2.5.1", "torchmetrics==1.6.0"
+  - id: monitor
+    name: Expose the monitoring gateway to intercept and store the calls to classifier API
+    kind: service
+    implementation:
+      framework: aixpa
+      spec:
+        kind: python 
+        code_src: "git+https://github.com/tn-aixpa/faudit-classifier" 
+        handler: "src.monitor:serve"
+        init_function: init
+        python_version: PYTHON3_10
+        requirements: "SQLAlchemy==1.4.54", "psycopg2-binary", "torchmetrics==1.6.0"
