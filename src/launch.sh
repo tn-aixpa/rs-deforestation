@@ -5,7 +5,7 @@ pwd
 source .bashrc
 echo "Init conda.."
 source activate rsde
-echo "py version:"
-python -V
-
+echo "GDAL version:"
+gdal-config --version
+printenv | grep DH
 exit
