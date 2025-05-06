@@ -12,6 +12,7 @@ import utils.post_processing as pp
 import utils.custom_bfast as bfast
 from tqdm import tqdm
 import digitalhub as dh
+from utils.skd_handler import upload_artifact
 
 
 def deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath):
@@ -289,11 +290,17 @@ datapath = 'data'
 outpath = 'output'
 temppath = fm.joinpath(maindir, 'numpy')
 
-deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath)
-
-src_path=output;
+src_path=outpath
 artifact_name='deforestation'
 project_name='deforestation'
-print(f"Loading artifact: {artifact_name}, {artifact_name}")
+# download shape
 project = dh.get_or_create_project(project_name)
-project.log_artifact(name=artifact_name,kind="artifact",source=src_path)
+bosco_artifact = project.get_artifact('bosco')
+boscopath = bosco_artifact.download(boscopath, overwrite=True)
+# download data
+data = project.get_artifact('data')
+datapath =  data.download(datapath, overwrite=True)
+
+deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath)
+print(f"Upoading artifact: {artifact_name}, {artifact_name}")
+upload_artifact(artifact_name=artifact_name,project_name=project_name,src_path=src_path)

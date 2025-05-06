@@ -13,9 +13,9 @@ COPY utils /app/utils
 RUN mkdir /app/data
 RUN mkdir /app/output
 RUN mkdir /app/bosco
-COPY bosco .
-COPY data .
-RUN python -m pip install --upgrade pip
+COPY bosco /app/bosco
+COPY data /app/data
+
 RUN python -m pip install -r requirements.txt
 
 #ENTRYPOINT [ "python","main.py" ]
