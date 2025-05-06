@@ -13,8 +13,8 @@ COPY utils /app/utils
 RUN mkdir /app/data
 RUN mkdir /app/output
 RUN mkdir /app/bosco
-COPY bosco /app/bosco
-COPY data /app/data
+#COPY bosco /app/bosco
+#COPY data /app/data
 
 RUN python -m pip install -r requirements.txt
 
