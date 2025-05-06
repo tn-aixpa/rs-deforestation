@@ -7,5 +7,6 @@ echo "Init conda.."
 source activate rsde
 echo "GDAL version:"
 gdal-config --version
-printenv | grep DH
+cd /app
+python main.py
 exit
