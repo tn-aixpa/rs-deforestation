@@ -11,6 +11,7 @@ from utils.utils import run_bfast_parallel, get_month_numbers, interpolate_for_y
 import utils.post_processing as pp
 import utils.custom_bfast as bfast
 from tqdm import tqdm
+import digitalhub as dh
 
 
 def deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath):
