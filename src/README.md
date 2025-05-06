@@ -9,19 +9,16 @@ This project implements a pipeline for deforestation using Sentinel-2 Level-2A i
   - Used to limit analysis to forested areas.
   - Can be downloaded from the [WebGIS Portal](https://webgis.provincia.tn.it/) confine del bosco layer or from https://siatservices.provincia.tn.it/idt/vector/p_TN_3d0874bc-7b9e-4c95-b885-0f7c610b08fa.zip.
 
-
-
-
-
 ## Output
 
 GeoTIFF file for:
-- **Change map** (e.g., `CD_2018_2019.tif`)
- 
-The change map has two bands for each pixel: 
-1) year of change (2018 or 2019)
-2) probability of change ( between 0 to 1)
 
+- **Change map** (e.g., `CD_2018_2019.tif`)
+
+The change map has two bands for each pixel:
+
+1. year of change (2018 or 2019)
+2. probability of change ( between 0 to 1)
 
 The output is saved in the specified output directory.
 
@@ -31,15 +28,15 @@ The output is saved in the specified output directory.
 
 The following parameters are required to run the script:
 
-| Parameter  | Description                                    | Example                            |
-|------------|------------------------------------------------|------------------------------------|
-| `sensor`   | Satellite sensor type (currently only `S2`)    | `'S2'`                              |
-| `tilename` | Sentinel-2 tile name                           | `'T32TPS'`                          |
-| `years`    | List of years for time series analysis         | `['2018', '2019']`                 |
-| `maindir`  | Main directory path for temporary and input data | `'/home/user/'`                  |
-| `boscopath`  | Path for forest mask                          | `'/home/user/'`                  |
-| `datapath` | Path to the directory containing `.SAFE` data  | `'/path/to/DATA/'`                 |
-| `outpath`  | Directory where output files will be saved     | `'/path/to/OUTPUT/'`               |
+| Parameter   | Description                                      | Example              |
+| ----------- | ------------------------------------------------ | -------------------- |
+| `sensor`    | Satellite sensor type (currently only `S2`)      | `'S2'`               |
+| `tilename`  | Sentinel-2 tile name                             | `'T32TPS'`           |
+| `years`     | List of years for time series analysis           | `['2018', '2019']`   |
+| `maindir`   | Main directory path for temporary and input data | `'/home/user/'`      |
+| `boscopath` | Path for forest mask                             | `'/home/user/'`      |
+| `datapath`  | Path to the directory containing `.SAFE` data    | `'/path/to/DATA/'`   |
+| `outpath`   | Directory where output files will be saved       | `'/path/to/OUTPUT/'` |
 
 ---
 
@@ -82,6 +79,8 @@ maskpath = '/home/user/Platform/Bosco/'
 datapath = '/home/user/Platform/DATA/'
 outpath = '/home/user/Platform/OUTPUT/'
 
-deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath)
+### Local
+docker run -i --env-file environmentenv -v d:/project/rs-deforestation:/app/files -t 7cd417b2c414 "{\"satelliteParams\":{\"satelliteType\":\"Sentinel2\",\"processingLevel\":\"LEVEL1\",\"sensorMode\":\"IW\",\"productType\":\"GRD\"},\"startDate\":\"2018-01-04\",\"endDate\":\"2018-01-05\",\"geometry\":\"POLYGON((10.98014831542969 45.455314263477874,11.030273437500002 45.44808893044964,10.99937438964844 45.42014226680115,10.953025817871096 45.435803739956725,10.98014831542969 45.455314263477874))\",\"cloudCover\":\"[0,2]\",\"area_sampling\":\"True\",\"tmp_path_same_folder_dwl\":\"True\",\"artifact_name\":\"sentinel2-grd-image\"}"
 
 
+```

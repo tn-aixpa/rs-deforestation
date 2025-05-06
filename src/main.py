@@ -289,3 +289,10 @@ outpath = 'output'
 temppath = fm.joinpath(maindir, 'numpy')
 
 deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath)
+
+src_path=output;
+artifact_name='deforestation'
+project_name='deforestation'
+print(f"Loading artifact: {artifact_name}, {artifact_name}")
+project = dh.get_or_create_project(project_name)
+project.log_artifact(name=artifact_name,kind="artifact",source=src_path)
