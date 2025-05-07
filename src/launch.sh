@@ -7,6 +7,7 @@ echo "Init conda.."
 source activate rsde
 echo "GDAL version:"
 gdal-config --version
+#printenv
 cd /app
-python main.py
+python main.py "{'input1':'bosco', 'input2': 'data', 'input3':['2018', '2019'], 'input4': 'deforestation_output'}"
 exit
