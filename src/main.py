@@ -307,9 +307,12 @@ if __name__ == "__main__":
     project = dh.get_or_create_project(project_name)
     bosco_artifact = project.get_artifact(input1)
     boscopath = bosco_artifact.download(boscopath, overwrite=True)
+
+    upload_artifact(artifact_name='test',project_name=project_name,src_path=boscopath)
+
     # download data
-    data = project.get_artifact(input2)
-    datapath =  data.download(datapath, overwrite=True)
-    deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath)
-    print(f"Upoading artifact: {artifact_name}, {artifact_name}")
-    upload_artifact(artifact_name=artifact_name,project_name=project_name,src_path=outpath)
+    # data = project.get_artifact(input2)
+    # datapath =  data.download(datapath, overwrite=True)
+    # deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath)
+    # print(f"Upoading artifact: {artifact_name}, {artifact_name}")
+    # upload_artifact(artifact_name=artifact_name,project_name=project_name,src_path=outpath)
