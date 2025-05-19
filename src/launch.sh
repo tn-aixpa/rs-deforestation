@@ -6,6 +6,7 @@ source .bashrc
 echo "Init conda.."
 source activate rsde
 echo "GDAL version:"
+python --version
 gdal-config --version
 #printenv
 cd /app

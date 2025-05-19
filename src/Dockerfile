@@ -1,9 +1,9 @@
-FROM ghcr.io/tn-aixpa/rsde-tools:0.1.0
+FROM ghcr.io/tn-aixpa/rsde-tools:2.0
 
 USER 1000
 
 RUN conda init bash && . ~/.bashrc 
-RUN echo "conda activate rsde" >> ~/.bashrc
+#RUN echo "conda activate rsde" >> ~/.bashrc
 
 WORKDIR /app
 COPY main.py .
