@@ -2,7 +2,7 @@ FROM ghcr.io/tn-aixpa/rsde-tools:2.0
 
 #USER 1000
 
-#RUN conda init bash && . ~/.bashrc 
+RUN conda init bash && . ~/.bashrc 
 #RUN echo "conda activate rsde" >> ~/.bashrc
 
 WORKDIR /app
