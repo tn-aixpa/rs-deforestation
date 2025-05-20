@@ -302,6 +302,7 @@ if __name__ == "__main__":
     artifact_name=json_input['input4']
 
     print(f"input1: {input1}, input2:{input2}, years:{years}, artifact_name:{artifact_name}, project:{project_name}")
+    print(f"type input1: {type(input1)}, type input2:{type(input2)}, type years:{type(years)}, type artifact_name:{type(artifact_name)}, project:{project_name}")
 
     # download shape
     project = dh.get_or_create_project(project_name)
