@@ -288,19 +288,19 @@ def shapefile_to_array(shapefile_path, ref_transform, ref_proj, ref_height, ref_
     target_srs = osr.SpatialReference()
     target_srs.ImportFromWkt(ref_proj)
     
-    # if not source_srs.IsSame(target_srs):
-    #     coord_trans = osr.CoordinateTransformation(source_srs, target_srs)
-    #     for feature in layer:
-    #         geom = feature.GetGeometryRef()
-    #         geom.Transform(coord_trans)
-    #     layer.ResetReading()
-
-    coord_trans = None
     if not source_srs.IsSame(target_srs):
         coord_trans = osr.CoordinateTransformation(source_srs, target_srs)
-        layer.SetSpatialFilter(None)  
-        layer.SetSpatialRef(source_srs)  
-        layer.SetCoordinateTransformation(coord_trans)
+        for feature in layer:
+            geom = feature.GetGeometryRef()
+            geom.Transform(coord_trans)
+        layer.ResetReading()
+
+    # coord_trans = None
+    # if not source_srs.IsSame(target_srs):
+    #     coord_trans = osr.CoordinateTransformation(source_srs, target_srs)
+    #     layer.SetSpatialFilter(None)  
+    #     layer.SetSpatialRef(source_srs)  
+    #     layer.SetCoordinateTransformation(coord_trans)
 
     # Rasterize using attribute
     gdal.RasterizeLayer(target_ds, [1], layer, options=[f"ATTRIBUTE={attribute.upper()}"])
