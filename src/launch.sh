@@ -6,9 +6,17 @@ source .bashrc
 echo "GDAL version:"
 gdal-config --version
 python --version
-#printenv
+echo "GDAL DATA:"
+echo $GDAL_DATA
+echo "PROJ_LIB"
+echo $PROJ_LIB
 cd /app
 echo "{'input1': '$1', 'input2': '$2', 'input3':$3, 'input4': '$4'}"
-#python main.py "{'input1':'bosco', 'input2': 'data', 'input3':['2018', '2019'], 'input4': 'deforestation_output'}"
+export PROJ_LIB=/home/nonroot/miniconda3/share/proj
+export GDAL_DATA=/home/nonroot/miniconda3/share/gdal
+echo "GDAL DATA AFTER EXPORT:"
+echo $GDAL_DATA
+echo "PROJ_LIB AFTER EXPORT"
+echo $PROJ_LIB
 python main.py "{'input1': '$1', 'input2': '$2', 'input3':$3, 'input4': '$4'}"
 exit
