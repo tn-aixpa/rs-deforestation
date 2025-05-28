@@ -280,7 +280,7 @@ def deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath
     minutes = (end_time - start_time) / 60
     print(f"Execution time: {minutes:.2f} minutes")
          
-# "{'input1':'bosco', 'input2': 'data', 'input3':['2018', '2019'], 'input4': 'deforestation_output'}"
+# "{'shape':'bosco', 'data': 'data', 'years':['2018', '2019'], 'outputArtifactName': 'deforestation_output'}"
 
 if __name__ == "__main__":
     args = sys.argv[1].replace("'","\"")
@@ -288,32 +288,31 @@ if __name__ == "__main__":
     #PREPARE SOME TOOLBOX PARAMETERS
     sensor = 'S2'
     tilename = 'T32TPR' # must match with tile type in the downloaded sentinel data.
-    
     maindir = '.'
     boscopath = 'bosco'
     datapath = 'data'
     outpath = 'output'
     temppath = fm.joinpath(maindir, 'numpy')
     
-    input1 = json_input['input1']
-    project_name=os.environ["PROJECT_NAME"]
-    input2 = json_input['input2']
-    years = json_input['input3'] #['2018', '2019']
-    artifact_name=json_input['input4']
+    shape = json_input['shapeArtifactName'] #shape artifact name (e.g., 'bosco')
+    project_name=os.environ["PROJECT_NAME"] #project name (e.g., 'deforestation')
+    data = json_input['dataArtifactName'] #data artifact name (e.g., 'data')
+    years = json_input['years'] # list of years to process (e.g., ['2018', '2019'])
+    output_artifact_name=json_input['outputArtifactName'] #output artifact name (e.g., 'deforestation_output')
 
-    print(f"input1: {input1}, input2:{input2}, years:{years}, artifact_name:{artifact_name}, project:{project_name}")
-    print(f"type input1: {type(input1)}, type input2:{type(input2)}, type years:{type(years)}, type artifact_name:{type(artifact_name)}, project:{project_name}")
+    print(f"shape: {shape}, data:{data}, years:{years}, output_artifact_name:{output_artifact_name}, project:{project_name}")
+    #print(f"type shape: {type(shape)}, type data:{type(data)}, type years:{type(years)}, type output_artifact_name:{type(output_artifact_name)}, project:{project_name}")
 
     # download shape
     project = dh.get_or_create_project(project_name)
-    bosco_artifact = project.get_artifact(input1)
+    bosco_artifact = project.get_artifact(shape)
     boscopath = bosco_artifact.download(boscopath, overwrite=True)
 
-    #upload_artifact(artifact_name='test',project_name=project_name,src_path=boscopath)
-
     # download data
-    data = project.get_artifact(input2)
+    data = project.get_artifact(data)
     datapath =  data.download(datapath, overwrite=True)
     deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath)
-    print(f"Upoading artifact: {artifact_name}, {artifact_name}")
-    upload_artifact(artifact_name=artifact_name,project_name=project_name,src_path=outpath)
+    
+    #upload output artifact
+    print(f"Upoading artifact: {output_artifact_name}, {output_artifact_name}")
+    upload_artifact(output_artifact_name=output_artifact_name,project_name=project_name,src_path=outpath)

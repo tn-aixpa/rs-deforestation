@@ -11,12 +11,13 @@ echo $GDAL_DATA
 echo "PROJ_LIB"
 echo $PROJ_LIB
 cd /app
-echo "{'input1': '$1', 'input2': '$2', 'input3':$3, 'input4': '$4'}"
+echo "{'shapeArtifactName': '$1', 'dataArtifactName': '$2', 'years':$3, 'outputArtifactName': '$4'}"
 export PROJ_LIB=/home/nonroot/miniforge3/share/proj
 export GDAL_DATA=/home/nonroot/miniforge3/share/gdal
+#export PATH="/home/nonroot/miniforge3/snap/.snap/auxdata/gdal/gdal-3-0-0/bin/:$PATH"
 echo "GDAL DATA AFTER EXPORT:"
 echo $GDAL_DATA
 echo "PROJ_LIB AFTER EXPORT"
 echo $PROJ_LIB
-python main.py "{'input1': '$1', 'input2': '$2', 'input3':$3, 'input4': '$4'}"
+python main.py "{'shapeArtifactName': '$1', 'dataArtifactName': '$2', 'years':$3, 'outputArtifactName': '$4'}"
 exit
