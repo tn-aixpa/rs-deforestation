@@ -17,13 +17,8 @@ import json
 
 
 def deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath):
-    # Initialize logging and timer
-    logging = {} 
     start_time = time.time()
-    
-
-
-
+   
     # Check sensor type and get tile list
     if sensor == 'S2':
         tiledict = getTileList(datapath)
