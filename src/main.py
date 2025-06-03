@@ -310,4 +310,4 @@ if __name__ == "__main__":
     
     #upload output artifact
     print(f"Upoading artifact: {output_artifact_name}, {output_artifact_name}")
-    upload_artifact(output_artifact_name=output_artifact_name,project_name=project_name,src_path=outpath)
+    upload_artifact(artifact_name=output_artifact_name,project_name=project_name,src_path=outpath)
