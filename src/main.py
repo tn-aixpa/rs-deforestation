@@ -114,162 +114,162 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
         # Flush memory-mapped arrays to disk
         feature_all.flush()
         #read the dates
-    # Convert the date strings to datetime objects
-    all_dates_datetime = [datetime.strptime(date, '%Y%m%d') for date in all_dates]
-    
-    # Separate dates based on the year
-    dates_2018 = [date for date in all_dates_datetime if date.year == 2018]
-    dates_2019 = [date for date in all_dates_datetime if date.year == 2019]
-    
-    
-    #feature data
-    feature_data = feature_all
-    
-    #filter by bosco map
-    feature_data = np.where(bosco_mask[:,:,np.newaxis] == 0, np.nan, feature_data).astype(np.float16)
-    height, width, time_steps = feature_data.shape
-    
-    # Flatten image and get valid pixel indices (not NaN across all time steps)
-    flat_pixels = feature_data.reshape(-1, time_steps)
-    valid_mask = ~np.isnan(flat_pixels).all(axis=1)
-    valid_pixels = flat_pixels[valid_mask]
-    
-    print(f"Total pixels: {flat_pixels.shape[0]}, Valid pixels: {valid_pixels.shape[0]}")
-
-    # Interpolation
-    print('Generating monthly samples:')
-
-    # Define output file path
-    interpolated_feature_path = os.path.join(outpath, "interpolated_feature.npy")
-
-    # Check if file exists
-    if os.path.exists(interpolated_feature_path):
-        print(f"Interpolated feature already exists at: {interpolated_feature_path}")
-        interpolated_feature = np.load(interpolated_feature_path)
-    else:
-        # Interpolation process
-        interpolated_valid = Parallel(n_jobs=6)(
-            delayed(interpolate_time_series)(px, dates_2018, dates_2019)
-            for px in tqdm(valid_pixels, desc="Interpolating")
-        )
-        interpolated_valid = np.stack(interpolated_valid).astype(np.float16)
-
-        # Create full 3D array with NaNs
-        new_time_steps = interpolated_valid.shape[1]
-        interpolated_full = np.zeros((height * width, 24), dtype=np.float16)
-
-        # Fill valid positions
-        interpolated_full[valid_mask] = interpolated_valid
-
-        # Reshape back to 3D image
-        interpolated_feature = interpolated_full.reshape(height, width, new_time_steps)
-
-        # Save to output
-        np.save(interpolated_feature_path, interpolated_feature)
-        print(f"Saved interpolated feature to: {interpolated_feature_path}")
+        # Convert the date strings to datetime objects
+        all_dates_datetime = [datetime.strptime(date, '%Y%m%d') for date in all_dates]
         
-
-    print(f"Interpolated feature shape: {interpolated_feature.shape}")  
-
-
-    # Reshape for BFAST
-    totpixels = height * width
-    fused_reshaped = interpolated_feature.reshape((totpixels, 24))
-   
-    
-    # Run BFAST
-    print('Running break point detector:')
-
-    startyear = int(years[0])
-    endyear = int(years[-1]) 
-    freq = 12 #monthly data
-    nyear = endyear - startyear 
-    years_np = np.arange(startyear, endyear+1)
-    
-    #Save as numpy array
-
-    changemaps_path = os.path.join(outpath, "changemaps_year.npy")
-    accuracymaps_path = os.path.join(outpath, "accuracymaps.npy")
-
-
-    # Check if both files exist
-    if os.path.exists(changemaps_path) and os.path.exists(accuracymaps_path):
-        print("Loading precomputed change maps and accuracy maps.")
-        changemaps_year = np.load(changemaps_path)
-        accuracymaps = np.load(accuracymaps_path)
-
-    else:    
-
-        print(f"Input array shape : {fused_reshaped.shape}")
-        batch_size = int(totpixels/10)  # Try 1M, 2M, etc.
-        num_batches = int(np.ceil(fused_reshaped.shape[0] / batch_size))
+        # Separate dates based on the year
+        dates_2018 = [date for date in all_dates_datetime if date.year == 2018]
+        dates_2019 = [date for date in all_dates_datetime if date.year == 2019]
         
-        all_breaks = []
-        all_confidence = []
-        dates = bfast.r_style_interval((startyear, 1), (startyear + nyear, 365), freq).reshape(fused_reshaped.shape[1], 1)
+        
+        #feature data
+        feature_data = feature_all
+        
+        #filter by bosco map
+        feature_data = np.where(bosco_mask[:,:,np.newaxis] == 0, np.nan, feature_data).astype(np.float16)
+        height, width, time_steps = feature_data.shape
+        
+        # Flatten image and get valid pixel indices (not NaN across all time steps)
+        flat_pixels = feature_data.reshape(-1, time_steps)
+        valid_mask = ~np.isnan(flat_pixels).all(axis=1)
+        valid_pixels = flat_pixels[valid_mask]
+        
+        print(f"Total pixels: {flat_pixels.shape[0]}, Valid pixels: {valid_pixels.shape[0]}")
 
-        for i in range(num_batches):
-            start = i * batch_size
-            end = min((i + 1) * batch_size, fused_reshaped.shape[0])
-            print(f"Processing batch {i+1}/{num_batches} ({end - start} pixels)")
+        # Interpolation
+        print('Generating monthly samples:')
+
+        # Define output file path
+        interpolated_feature_path = os.path.join(outpath, f"interpolated_feature_{k}.npy")
+
+        # Check if file exists
+        if os.path.exists(interpolated_feature_path):
+            print(f"Interpolated feature already exists at: {interpolated_feature_path}")
+            interpolated_feature = np.load(interpolated_feature_path)
+        else:
+            # Interpolation process
+            interpolated_valid = Parallel(n_jobs=6)(
+                delayed(interpolate_time_series)(px, dates_2018, dates_2019)
+                for px in tqdm(valid_pixels, desc="Interpolating")
+            )
+            interpolated_valid = np.stack(interpolated_valid).astype(np.float16)
+
+            # Create full 3D array with NaNs
+            new_time_steps = interpolated_valid.shape[1]
+            interpolated_full = np.zeros((height * width, 24), dtype=np.float16)
+
+            # Fill valid positions
+            interpolated_full[valid_mask] = interpolated_valid
+
+            # Reshape back to 3D image
+            interpolated_feature = interpolated_full.reshape(height, width, new_time_steps)
+
+            # Save to output
+            np.save(interpolated_feature_path, interpolated_feature)
+            print(f"Saved interpolated feature to: {interpolated_feature_path}")
             
-            batch_data = fused_reshaped[start:end]
+
+        print(f"Interpolated feature shape: {interpolated_feature.shape}")  
+
+
+        # Reshape for BFAST
+        totpixels = height * width
+        fused_reshaped = interpolated_feature.reshape((totpixels, 24))
+    
         
-            with Parallel(n_jobs=-1) as parallel:
-                
-                breaks, confidence = run_bfast_parallel(parallel, batch_data, dates, freq)
-                
-            all_breaks.append(breaks)
-            all_confidence.append(confidence)    
+        # Run BFAST
+        print('Running break point detector:')
+
+        startyear = int(years[0])
+        endyear = int(years[-1]) 
+        freq = 12 #monthly data
+        nyear = endyear - startyear 
+        years_np = np.arange(startyear, endyear+1)
+        
+        #Save as numpy array
+
+        changemaps_path = os.path.join(outpath, f"changemaps_year_{k}.npy")
+        accuracymaps_path = os.path.join(outpath, f"accuracymaps_{k}.npy")
+
+
+        # Check if both files exist
+        if os.path.exists(changemaps_path) and os.path.exists(accuracymaps_path):
+            print("Loading precomputed change maps and accuracy maps.")
+            changemaps_year = np.load(changemaps_path)
+            accuracymaps = np.load(accuracymaps_path)
+
+        else:    
+
+            print(f"Input array shape : {fused_reshaped.shape}")
+            batch_size = int(totpixels/10)  # Try 1M, 2M, etc.
+            num_batches = int(np.ceil(fused_reshaped.shape[0] / batch_size))
             
-        # Combine all results
-        breaks = np.concatenate(all_breaks, axis=0)
-        confidence = np.concatenate(all_confidence, axis=0) 
+            all_breaks = []
+            all_confidence = []
+            dates = bfast.r_style_interval((startyear, 1), (startyear + nyear, 365), freq).reshape(fused_reshaped.shape[1], 1)
 
-        # Compute change maps and accuracy maps
-        changemaps = breaks // freq
-        accuracymaps = confidence
-        changemaps = changemaps.reshape(height, width)
-        accuracymaps = accuracymaps.reshape(height, width)
+            for i in range(num_batches):
+                start = i * batch_size
+                end = min((i + 1) * batch_size, fused_reshaped.shape[0])
+                print(f"Processing batch {i+1}/{num_batches} ({end - start} pixels)")
+                
+                batch_data = fused_reshaped[start:end]
+            
+                with Parallel(n_jobs=-1) as parallel:
+                    
+                    breaks, confidence = run_bfast_parallel(parallel, batch_data, dates, freq)
+                    
+                all_breaks.append(breaks)
+                all_confidence.append(confidence)    
+                
+            # Combine all results
+            breaks = np.concatenate(all_breaks, axis=0)
+            confidence = np.concatenate(all_confidence, axis=0) 
 
-        # Convert index to year
-        changemaps_year = np.zeros_like(changemaps, dtype=int)
-        for i, year in enumerate(years_np):
-            changemaps_year[changemaps == i] = year
+            # Compute change maps and accuracy maps
+            changemaps = breaks // freq
+            accuracymaps = confidence
+            changemaps = changemaps.reshape(height, width)
+            accuracymaps = accuracymaps.reshape(height, width)
+
+            # Convert index to year
+            changemaps_year = np.zeros_like(changemaps, dtype=int)
+            for i, year in enumerate(years_np):
+                changemaps_year[changemaps == i] = year
 
 
-        # Save results
-        np.save(changemaps_path, changemaps_year)
-        np.save(accuracymaps_path, accuracymaps)
-        print(f"Saved changemaps_year to: {changemaps_path}")
-        print(f"Saved accuracymaps to: {accuracymaps_path}")      
+            # Save results
+            np.save(changemaps_path, changemaps_year)
+            np.save(accuracymaps_path, accuracymaps)
+            print(f"Saved changemaps_year to: {changemaps_path}")
+            print(f"Saved accuracymaps to: {accuracymaps_path}")      
+            
+        print('Start post processing:')
+        # Remove isolated pixels
+        updated_change_array, updated_probability_array = pp.remove_isolated_pixels(changemaps_year, accuracymaps)
         
-    print('Start post processing:')
-    # Remove isolated pixels
-    updated_change_array, updated_probability_array = pp.remove_isolated_pixels(changemaps_year, accuracymaps)
-    
-    print('Fill gaps and update probabilities:')
-    # Fill gaps and update probabilities
-    final_change_array, final_probability_array = pp.fill_small_holes_and_update_probabilities(updated_change_array, updated_probability_array) 
+        print('Fill gaps and update probabilities:')
+        # Fill gaps and update probabilities
+        final_change_array, final_probability_array = pp.fill_small_holes_and_update_probabilities(updated_change_array, updated_probability_array) 
 
-    final_change_array = final_change_array.astype(float)
-    final_probability_array = final_probability_array.astype(float)
-    final_change_array[final_change_array ==0 ] = np.nan
-    final_probability_array[final_probability_array ==0 ] = np.nan    
-    
-    # Save output 
-    output_filename_process = fm.joinpath(outpath,"CD_2018_2019.tif")
-    
-    fm.writeGeoTIFFD(output_filename_process, np.stack([final_change_array, final_probability_array], axis=-1), geotransform, projection) 
+        final_change_array = final_change_array.astype(float)
+        final_probability_array = final_probability_array.astype(float)
+        final_change_array[final_change_array ==0 ] = np.nan
+        final_probability_array[final_probability_array ==0 ] = np.nan    
+        
+        # Save output 
+        output_filename_process = fm.joinpath(outpath,f"CD_2018_2019_{k}.tif")
+        
+        fm.writeGeoTIFFD(output_filename_process, np.stack([final_change_array, final_probability_array], axis=-1), geotransform, projection) 
 
-    print("Processing complete!") 
-    
-    # End timing
-    end_time = time.time()
-    
-    # Calculate and print time in minutes
-    minutes = (end_time - start_time) / 60
-    print(f"Execution time: {minutes:.2f} minutes")
+        print("Processing complete!") 
+        
+        # End timing
+        end_time = time.time()
+        
+        # Calculate and print time in minutes
+        minutes = (end_time - start_time) / 60
+        print(f"Execution time: {minutes:.2f} minutes")
          
 # "{'shape':'bosco', 'data': 'data', 'years':['2018', '2019'], 'outputArtifactName': 'deforestation_output'}"
 
