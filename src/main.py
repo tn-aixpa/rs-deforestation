@@ -16,7 +16,7 @@ from utils.skd_handler import upload_artifact
 import json
 
 
-def deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath):
+def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
     start_time = time.time()
    
     # Check sensor type and get tile list
@@ -44,7 +44,7 @@ def deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath
 
         for y in years:
             # Set temporary path for the current year
-            temppath = fm.joinpath(maindir, 'numpy', tilename)
+            temppath = fm.joinpath(maindir, 'numpy', k)
 
             # Get features for the current year
             ts, _, _ = tile.gettimeseries(year=y, option='default')
@@ -282,7 +282,7 @@ if __name__ == "__main__":
     json_input = json.loads(args)
     #PREPARE SOME TOOLBOX PARAMETERS
     sensor = 'S2'
-    tilename = 'T32TPR' # must match with tile type in the downloaded sentinel data.
+    #tilename = 'T32TPR' # must match with tile type in the downloaded sentinel data.
     maindir = '.'
     boscopath = 'bosco'
     datapath = 'data'
@@ -306,7 +306,7 @@ if __name__ == "__main__":
     # download data
     data = project.get_artifact(data)
     datapath =  data.download(datapath, overwrite=True)
-    deforestation(sensor, tilename, years, maindir, boscopath, datapath, outpath)
+    deforestation(sensor, years, maindir, boscopath, datapath, outpath)
     
     #upload output artifact
     print(f"Upoading artifact: {output_artifact_name}, {output_artifact_name}")
