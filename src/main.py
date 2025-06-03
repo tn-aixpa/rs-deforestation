@@ -110,15 +110,10 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
 
                 # Delete intermediate arrays to free memory
                 del b3, b4, b5, NDVI, BSI, msk, fuse_feature, feature_mask
-
-
                 
         # Flush memory-mapped arrays to disk
         feature_all.flush()
-        
-
-    
-    #read the dates
+        #read the dates
     # Convert the date strings to datetime objects
     all_dates_datetime = [datetime.strptime(date, '%Y%m%d') for date in all_dates]
     
@@ -172,6 +167,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
         # Save to output
         np.save(interpolated_feature_path, interpolated_feature)
         print(f"Saved interpolated feature to: {interpolated_feature_path}")
+        
 
     print(f"Interpolated feature shape: {interpolated_feature.shape}")  
 
