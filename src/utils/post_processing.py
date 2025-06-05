@@ -23,7 +23,7 @@ def remove_isolated_pixels(change_array, probability_array, area_threshold=16):
     - updated_probability_array: Probability array with corresponding isolated pixel probabilities removed.
     """
     # Ensure efficient dtypes
-    change_array = change_array.astype(np.uint8)
+    change_array = change_array.astype(np.int32)
     probability_array = probability_array.astype(np.float16)
 
     # Binary mask and label connected components
@@ -99,7 +99,7 @@ def fill_small_holes_and_update_probabilities(change_array, probability_array, m
                 filled_change_array[hole_mask] = mean_change
                 updated_probability_array[hole_mask] = mean_prob
 
-    return filled_change_array.astype(np.uint8), updated_probability_array.astype(np.float16)
+    return filled_change_array.astype(np.int32), updated_probability_array.astype(np.float16)
     
 
     
