@@ -17,3 +17,20 @@ The function represent a container runtime that allows you to deploy deployments
 ## 2. Run
 
 The function aims at downloading all the deforestation inputs from project context and perform the complex task of deforesation elaboration.
+
+```python
+run_el = function_rs.run(
+    action="job",
+    fs_group='8877',
+    resources={"cpu": {"requests": "6", "limits": "12"},"mem":{"requests": "32Gi", "limits": "64Gi"}},
+    volumes=[{
+        "volume_type": "persistent_volume_claim",
+        "name": "volume-deforestation",
+        "mount_path": "/app/files",
+        "spec": { "size": "250Gi" }
+    }],
+    args=['/shared/launch.sh', 'bosco', 'data_s2_deforestation', '[2018,2019]',  'deforestation_2018_19']
+)
+```
+
+As indicated in the project documentation, the pixel based analysis performed in the elaboration steps are computation heavy. The best possible performance matrix is more or less around the configuration indicated in the step above. The amount of sentinal data can vary. A safe limit volume of 250Gi is specified to ensure significant data space
