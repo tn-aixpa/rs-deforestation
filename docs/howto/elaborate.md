@@ -1,55 +1,19 @@
-# How to monitor production data
+# Elaboration
 
-The classifer model may be monitored in order to see the behavior of the model under production data.
-
-## Exposing monitor gateway with Custom API
-
-To deploy the monitoring gateway, it is possible to use the ``monitor`` operation defined in the project. Specifically, the following steps should be performed.
-
-1. Register the ``monitor`` deployment operation in the project
+## 1. Register the `elaborate` operation in the project
 
 ```python
-monitor = project.new_function(
-    name="monitor", 
-    kind="python", 
-    python_version="PYTHON3_10", 
-    code_src="monitor.py",     
-    handler="serve",
-    init_function="init",
-    requirements=["SQLAlchemy==1.4.54", "psycopg2-binary"]
-)
-)
-```
-The function represent a Python Serverless function that should be deployed on cluster.
-
-2. Activate the deployment.
-
-The function aims at intercepting the calls to the classifier service and requires the following configuration provided:
-
-- project secret ``DB_URL`` defined with the sql alchemy URL of the database where to store the monitored data.
-- name of the table ``TABLE_NAME`` to write the data provided as environment variable when the service is deployed
-- URL of the service ``SERVICE_URL`` to intercept as  environment variable when the service is deployed
-
-```python
-monitor_run = monitor.run(
-    action="serve",
-    envs=[
-        {"name":"TABLE_NAME", "value": "faudit_classifier_monitor"}, 
-        {"name": "SERVICE_URL", "value": service_url}],
-    secrets=["DB_URL"]
-)
+function_rs = proj.new_function(
+    "elaborate",
+    kind="container",
+    image="ghcr.io/tn-aixpa/rs-deforestation:2.6_b8",
+    command="/bin/bash",
+    code_src="launch.sh"
+    )
 ```
 
-Once the deployment is activated the monitor exposes the same API as a classifier and intercepts the requests.
+The function represent a container runtime that allows you to deploy deployments, jobs and services on Kubernetes. It uses the base image of rs-deforestation container deploved in the context of project create the environment required for the execution. It invovles pulling the base image with gdal installed and installing all the required libraries and launch instructions specified by 'launch.sh' file.
 
-3. Test the operation.
+## 2. Run
 
-To test the functionality of the API behind the monitor, it is possible to use the V2 API calls. The "text" file contain the input text to be classified. The 'k' parameter specify the number of
-classification labels required. For e.g. the request below asks for single classification label for input text.
-
-```python
-inputs = {"text": 'famiglia wifi ', "k": 1}
-monitor_run.invoke(json={"inference_input": inputs}).text
-```
-
-Besides returning the output of the classification, the data of the call is written to the specified table in the database for further analysis.
+The function aims at downloading all the deforestation inputs from projet context and perform the complex tax of deforesation elaboration.

@@ -23,8 +23,7 @@ Tool usage documentation [here](./docs/usage.md).
 ## How To
 
 - [Download and preprocess sentinel forest data](./docs/howto/download.md)
-- [Run Deforesation Elaboration ](./docs/howto/elaborate.md)
-- [Upload output data to datalake ](./docs/howto/log.md)
+- [Run Deforesation Elaboration and log output ](./docs/howto/elaborate.md)
 
 ## License
 
