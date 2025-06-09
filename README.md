@@ -8,14 +8,13 @@ This project implements a pipeline for deforestation using Sentinel-2 Level-2A i
 - `ai`: Remote Sensing
 - `domain`: PA
 
-The context in which this project was developed: The classifier is trained to suggest one or more labels within the Family Audit framework. More specifically, the classifier can predict the category of the action ("azione") of the text describing it. Given that the category of action for Municipalities is univocally connected with one macrocategory ("macrocategoria") and one field ("campo"), this classifier can be used to indicate which macrocategory and field of the action the text belongs to.
+The context in which this project was developed: The project pipeline downloads the indices of area of interest (Trentino) from the sentinel-2 download tool. The Trentino region covers several S2 tiles: T32TQS, T32TPR, T32TPS, T32TQR. These tiles can also be overlapped. The software process each downloaded tile separately, clip them using python procedure to convert the downloaded data to input files and then process the clipped tiles for the deforestation.
 
-The classifier is a tool that can be actually used for any classification domain, given similar or bigger amounts of text data. It does not matter which are the labels to predict, but they need to be encoded as integers (e.g. "Ecology" is represented by 1, "Childcare" is represented by 2, etc.). The product contains operations for
+The product contains operations for
 
-- Log the data in order to prepare it for training
-- perform model training and registering the model
-- serving the model using a custom API.
-- collect the data using monitoring gateway.
+- Download and preprocess the forest data
+- Perform deforestation elaboration
+- Log the output tiff image to datalake.
 
 ## Usage
 
