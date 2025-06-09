@@ -1,4 +1,4 @@
-How to prepare data for elaboration
+# How to prepare data for elaboration
 
 To prepare the deforestation data, it is required to log the data in the project context
 
