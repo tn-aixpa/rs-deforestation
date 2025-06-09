@@ -5,7 +5,7 @@ This project implements a pipeline for deforestation using Sentinel-2 Level-2A i
 #### AIxPA
 
 - `kind`: product-template
-- `ai`: Remote Sensing
+- `ai`: remote sensing
 - `domain`: PA
 
 The context in which this project was developed: The project pipeline downloads the indices of area of interest (Trentino) from the sentinel-2 download tool. The Trentino region covers several S2 tiles: T32TQS, T32TPR, T32TPS, T32TQR. These tiles can also be overlapped. The software process each downloaded tile separately, clip them using python procedure to convert the downloaded data to input files and then process the clipped tiles for the deforestation.
