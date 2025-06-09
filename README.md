@@ -16,7 +16,7 @@ The product contains operations for
 - Perform deforestation elaboration
 - Log the output tiff image to datalake.
 
-## Prequisites Note!
+## Prerequisites Notes!
 
 The pipelines takes around 5 hours to complete with 16 CPUs and 64GB Ram for 2 years of data which is the default period. It consists of interpolation and post processing steps which are computationally heavy since it is pixel based analysis. It is based on python joblib library for optimizations of numpy arrays. With the use of more images the interpolation will be shorter. The amount of sentinal data is huge that is whay a safe limit volume of 250Gi is specified to ensure significant data space.
 
