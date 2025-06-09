@@ -2,15 +2,15 @@
 
 To prepare the deforestation data, it is required to log the data in the project context
 
-1. Initialize the project
+## 1. Initialize the project
 
 ```python
 import digitalhub as dh
 PROJECT_NAME = "deforestation" # here goes the project name that you are creating on the platform
-project = dh.get_or_create_project(PROJECT_NAME)
+proj = dh.get_or_create_project(PROJECT_NAME)
 ```
 
-2. Log the Shape artifact
+## 2. Log the Shape artifact
 
 Log the shape file 'bosco' which can be downloaded from the [WebGIS Portal](https://webgis.provincia.tn.it/) confine del bosco layer or from https://siatservices.provincia.tn.it/idt/vector/p_TN_3d0874bc-7b9e-4c95-b885-0f7c610b08fa.zip. Unzip the files in a folder named 'bosco' and then log it
 
@@ -23,13 +23,13 @@ artifact_bosco = proj.log_artifact(name=artifact_name, kind="artifact", source=s
 Note that to invoke the operation on the platform, the data should be avaialble as an artifact on the platform datalake.
 
 ```python
-artifact = project.get_artifact("bosco")
+artifact = proj.get_artifact("bosco")
 artifact.key
 ```
 
 The resulting dataset will be registered as the project artifact in the datalake under the name `bosco`.
 
-3. Download Sentinel Data.
+## 3. Download Sentinel Data.
 
 Register to the open data space copenicus(if not already) and get your credentials.
 
@@ -61,13 +61,14 @@ string_dict_data = """{
 list_args =  ["main.py",string_dict_data]
 ```
 
-Register 'download_images_s2' download operation in the project
+Register 'download_images_s2' download operation in the project. The function if of kind container runtime that allows you to deploy deployments, jobs and services on Kubernetes.
+It uses the base image of sentinel-tools deploved in the context of project which is a wrapper for the Sentinel download and preprocessing routine for the integration with the AIxPA platform. For more details [Click here](https://github.com/tn-aixpa/sentinel-tools/). The parameters passed for sentinel downloads includes the starts and ends dates corresponding to period of two years of data. The ouput of this step will be logged inside to the platfrom project context as indicated by parameter 'artifact_name' ('data_s2_deforestation'). Several other paramters can be configures as per requirements for e.g. geometry, cloud cover percentage etc.
 
 ```python
 function_s2 = proj.new_function("download_images_s2",kind="container",image="ghcr.io/tn-aixpa/sentinel-tools:0.11.1_dev",command="python")
 ```
 
-Run the function
+### Run the function
 
 ```python
 run = function_s2.run(
