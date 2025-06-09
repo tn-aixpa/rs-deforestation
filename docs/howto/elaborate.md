@@ -16,4 +16,4 @@ The function represent a container runtime that allows you to deploy deployments
 
 ## 2. Run
 
-The function aims at downloading all the deforestation inputs from projet context and perform the complex tax of deforesation elaboration.
+The function aims at downloading all the deforestation inputs from project context and perform the complex task of deforesation elaboration.
