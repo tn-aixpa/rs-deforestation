@@ -10,79 +10,84 @@ PROJECT_NAME = "deforestation" # here goes the project name that you are creatin
 project = dh.get_or_create_project(PROJECT_NAME)
 ```
 
-2. Log the artifact
+2. Log the Shape artifact
+
+Log the shape file 'bosco' which can be downloaded from the [WebGIS Portal](https://webgis.provincia.tn.it/) confine del bosco layer or from https://siatservices.provincia.tn.it/idt/vector/p_TN_3d0874bc-7b9e-4c95-b885-0f7c610b08fa.zip. Unzip the files in a folder named 'bosco' and then log it
 
 ```python
-artifact = project.log_artifact(name="train_data_it",
-                    kind="artifact",
-                    source="./addestramento.gzip")
+artifact_name='bosco'
+src_path='bosco'
+artifact_bosco = proj.log_artifact(name=artifact_name, kind="artifact", source=src_path)
 ```
 
 Note that to invoke the operation on the platform, the data should be avaialble as an artifact on the platform datalake.
 
 ```python
-artifact = project.get_artifact("train_data_it")
+artifact = project.get_artifact("bosco")
 artifact.key
 ```
 
-The resulting dataset will be registered as the project artifact in the datalake under the name `train_data_it`.
+The resulting dataset will be registered as the project artifact in the datalake under the name `bosco`.
+
+3. Download Sentinel Data.
 
 Register to the open data space copenicus(if not already) and get your credentials.
 
+```
 https://identity.dataspace.copernicus.eu/auth/realms/CDSE/login-actions/registration?client_id=cdse-public&tab_id=FIiRPJeoiX4
+```
 
 Log the credentials as project secret keys as shown below
 
-# How to expose classifier model
-
-The classifer model may be exposed as an API for classification. In this project we have used the Custom API approach to serve the generated model.
-
-## Exposing model with Custom API
-
-To deploy more specific API that takes into account the types of labels, it is possible to use the `serve` operation defined in the project. Specifically, the following steps should be performed.
-
-1. Register the `serve` deployment operation in the project
+```python
+# THIS NEED TO BE EXECUTED JUST ONCE
+secret0 = proj.new_secret(name="CDSETOOL_ESA_USER", secret_value="esa_username")
+secret1 = proj.new_secret(name="CDSETOOL_ESA_PASSWORD", secret_value="esa_password")
+```
 
 ```python
-func = project.new_function(
-    name="serve",
-    kind="python",
-    python_version="PYTHON3_10",
-    code_src="git+https://<username>:<personal_access_token>@github.com/tn-aixpa/faudit-classifier",
-    handler="src.serve:serve",
-    init_function="init",
-    requirements=["numpy<2", "pandas==2.1.4","transformer_engine==1.12.0", "transformer_engine_cu12==1.12.0", "transformers==4.46.3", "torch==2.5.1", "torchmetrics==1.6.0"]
-)
+string_dict_data = """{
+ "satelliteParams":{
+     "satelliteType": "Sentinel2"
+ },
+ "startDate": "2018-01-01",
+ "endDate": "2019-12-31",
+ "geometry": "POLYGON((10.98014831542969 45.455314263477874,11.030273437500002 45.44808893044964,10.99937438964844 45.42014226680115,10.953025817871096 45.435803739956725,10.98014831542969 45.455314263477874))",
+ "area_sampling": "true",
+ "cloudCover": "[0,20]",
+ "artifact_name": "data_s2_deforestation"
+ }"""
+
+list_args =  ["main.py",string_dict_data]
 ```
 
-The function represent a Python Serverless function that should be deployed on cluster.
-
-2. Activate the deployment.
+Register 'download_images_s2' download operation in the project
 
 ```python
-serve_run = func.run(
-    action="serve"
-)
+function_s2 = proj.new_function("download_images_s2",kind="container",image="ghcr.io/tn-aixpa/sentinel-tools:0.11.1_dev",command="python")
 ```
 
-Once the deployment is activated, the V2 Open Inference Protocol is exposed and the Open API specification is available under `/docs` path.
-
-3. Test the operation.
-
-To test the functionality of the API, it is possible to use the V2 API calls. The "text" file contain the input text to be classified. The 'k' parameter specify the number of
-classification labels required. For e.g. the request below asks for single classification label for input text.
+Run the function
 
 ```python
-inputs = {"text": 'famiglia wifi ', "k": 1}
-serve_run.invoke(json={"inference_input": inputs}).text
+run = function_s2.run(
+    action="job",
+    secrets=["CDSETOOL_ESA_USER","CDSETOOL_ESA_PASSWORD"],
+    fs_group='8877',
+    args=["main.py", string_dict_data],
+    resources={"cpu": {"requests": "3", "limits": "6"},"mem":{"requests": "32Gi", "limits": "64Gi"}},
+    volumes=[{
+        "volume_type": "persistent_volume_claim",
+        "name": "volume-deforestation",
+        "mount_path": "/app/files",
+        "spec": {
+             "size": "350Gi"
+        }
+    }])
 ```
 
-The api response will return the ids of most probable taxonomy. For futher details, look in to the correspondence.csv file present inside src folder which provide mapping between the ids and related taxonomy.
+Check the status of function.
 
-```
-{
-    "results": [
-        46
-    ]
-}
+```python
+run.refresh().status.state
 ```
