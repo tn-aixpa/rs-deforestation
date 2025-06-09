@@ -12,9 +12,15 @@ The context in which this project was developed: The project pipeline downloads 
 
 The product contains operations for
 
-- Download and preprocess the forest data
-- Perform deforestation elaboration
-- Log the output tiff image to datalake.
+- Download Sentinel-2 data using tile-specific metadata (containing only two years).
+- Perform elaboration
+  - Compute NDVI and BSI indices from RED, NIR, and SWIR1 bands.
+  - Apply cloud/shadow masks from precomputed binary mask files (MASK.npy).
+  - Interpolate data to generate a complete 24-month time series (12 months/year).
+  - Fuse features and reshape data into pixel-wise time series.
+  - Run BFAST to detect change points across time.
+  - Post-process change maps to remove isolated pixels and fill gaps.
+- Log results as GeoTIFF raster files.
 
 ## Prerequisites Notes!
 
