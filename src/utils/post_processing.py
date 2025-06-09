@@ -70,7 +70,7 @@ def _process_hole(label_id, labeled_holes, filled_change_array, updated_probabil
     return label_id, mean_change, mean_prob
 
 def fill_small_holes_and_update_probabilities(change_array, probability_array, max_hole_size=16, no_change_value=0, max_workers=8):
-    change_array = change_array.astype(np.uint8)
+    change_array = change_array.astype(np.int32)
     probability_array = probability_array.astype(np.float16)
 
     filled_change_array = change_array.copy()
