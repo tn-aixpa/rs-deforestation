@@ -2,85 +2,31 @@
 
 This project implements a pipeline for deforestation using Sentinel-2 Level-2A imagery. It processes raw .SAFE or .zip Sentinel-2 inputs, extracts NDVI and BSI indices, interpolates them to a monthly time series, applies BFAST (Breaks For Additive Season and Trend), and outputs change detection and probability maps.
 
-## Input
+#### AIxPA
 
-- **Sentinel-2 L2A Data** in `.SAFE` folders or `.zip` format.
-- **Forest Mask** in `.shp` or raster format.
-  - Used to limit analysis to forested areas.
-  - Can be downloaded from the [WebGIS Portal](https://webgis.provincia.tn.it/) confine del bosco layer or from https://siatservices.provincia.tn.it/idt/vector/p_TN_3d0874bc-7b9e-4c95-b885-0f7c610b08fa.zip.
+-   `kind`: product-template
+-   `ai`: Remote Sensing
+-   `domain`: PA
 
-## Output
+The context in which this project was developed: The classifier is trained to suggest one or more labels within the Family Audit framework. More specifically, the classifier can predict the category of the action ("azione") of the text describing it. Given that the category of action for Municipalities is univocally connected with one macrocategory ("macrocategoria") and one field ("campo"), this classifier can be used to indicate which macrocategory and field of the action the text belongs to.
 
-GeoTIFF file for:
+The classifier is a tool that can be actually used for any classification domain, given similar or bigger amounts of text data. It does not matter which are the labels to predict, but they need to be encoded as integers (e.g. "Ecology" is represented by 1, "Childcare" is represented by 2, etc.). The product contains operations for
 
-- **Change map** (e.g., `CD_2018_2019.tif`)
+- Log the data in order to prepare it for training
+- perform model training and registering the model
+- serving the model using a custom API.
+- collect the data using monitoring gateway.
 
-The change map has two bands for each pixel:
+## Usage
 
-1. year of change (2018 or 2019)
-2. probability of change ( between 0 to 1)
+Tool usage documentation [here](./docs/usage.md).
 
-The output is saved in the specified output directory.
+## How To
 
----
-
-## Parameters
-
-The following parameters are required to run the script:
-
-| Parameter   | Description                                      | Example              |
-| ----------- | ------------------------------------------------ | -------------------- |
-| `sensor`    | Satellite sensor type (currently only `S2`)      | `'S2'`               |
-| `tilename`  | Sentinel-2 tile name                             | `'T32TPS'`           |
-| `years`     | List of years for time series analysis           | `['2018', '2019']`   |
-| `maindir`   | Main directory path for temporary and input data | `'/home/user/'`      |
-| `boscopath` | Path for forest mask                             | `'/home/user/'`      |
-| `datapath`  | Path to the directory containing `.SAFE` data    | `'/path/to/DATA/'`   |
-| `outpath`   | Directory where output files will be saved       | `'/path/to/OUTPUT/'` |
-
----
-
-## How It Works
-
-1. **Read Sentinel-2 data** using tile-specific metadata.
-2. **Compute NDVI and BSI indices** from RED, NIR, and SWIR1 bands.
-3. **Apply cloud/shadow masks** from precomputed binary mask files (`MASK.npy`).
-4. **Interpolate data** to generate a complete 24-month time series (12 months/year).
-5. **Fuse features** and reshape data into pixel-wise time series.
-6. **Run BFAST** to detect change points across time.
-7. **Post-process** change maps to remove isolated pixels and fill gaps.
-8. **Export results** as GeoTIFF raster files.
-
----
-
-## Requirements
-
-- Python 3.7+
-- Required Python libraries (install via `pip` or `conda`):
-- `numpy`
-- `gdal`
-- `joblib`
-- `datetime`
-- `os`, `shutil`, `json`
-- Custom `utils` module (must be included in the repository)
-
----
-
-## Running the Script
-
-You can run the main script by configuring the parameters and calling the function:
-
-```python
-sensor = 'S2'
-tilename = 'T32TPS'
-years = ['2018','2019']
-maindir = '/home/user/'
-maskpath = '/home/user/Platform/Bosco/'
-datapath = '/home/user/Platform/DATA/'
-outpath = '/home/user/Platform/OUTPUT/'
-
-### Local
-docker run -i --env-file environmentenv -v d:/project/rs-deforestation:/app/files -t 7cd417b2c414 "{\"satelliteParams\":{\"satelliteType\":\"Sentinel2\",\"processingLevel\":\"LEVEL1\",\"sensorMode\":\"IW\",\"productType\":\"GRD\"},\"startDate\":\"2018-01-04\",\"endDate\":\"2018-01-05\",\"geometry\":\"POLYGON((10.98014831542969 45.455314263477874,11.030273437500002 45.44808893044964,10.99937438964844 45.42014226680115,10.953025817871096 45.435803739956725,10.98014831542969 45.455314263477874))\",\"cloudCover\":\"[0,2]\",\"area_sampling\":\"True\",\"tmp_path_same_folder_dwl\":\"True\",\"artifact_name\":\"sentinel2-grd-image\"}"
+- [Download forest data](./docs/howto/download.md)
+- [Elaboration ](./docs/howto/elaborate.md)
 
 
-```
+## License
+
+[Apache License 2.0](./LICENSE)
