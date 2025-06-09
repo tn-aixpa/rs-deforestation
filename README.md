@@ -4,9 +4,9 @@ This project implements a pipeline for deforestation using Sentinel-2 Level-2A i
 
 #### AIxPA
 
--   `kind`: product-template
--   `ai`: Remote Sensing
--   `domain`: PA
+- `kind`: product-template
+- `ai`: Remote Sensing
+- `domain`: PA
 
 The context in which this project was developed: The classifier is trained to suggest one or more labels within the Family Audit framework. More specifically, the classifier can predict the category of the action ("azione") of the text describing it. Given that the category of action for Municipalities is univocally connected with one macrocategory ("macrocategoria") and one field ("campo"), this classifier can be used to indicate which macrocategory and field of the action the text belongs to.
 
@@ -23,9 +23,9 @@ Tool usage documentation [here](./docs/usage.md).
 
 ## How To
 
-- [Download forest data](./docs/howto/download.md)
-- [Elaboration ](./docs/howto/elaborate.md)
-
+- [Download and preprocess sentinel forest data](./docs/howto/download.md)
+- [Run Deforesation Elaboration ](./docs/howto/elaborate.md)
+- [Upload output data to datalake ] (./docs/howto/log.md)
 
 ## License
 
