@@ -85,7 +85,7 @@ run = function_s2.run(
         "name": "volume-deforestation",
         "mount_path": "/app/files",
         "spec": {
-             "size": "350Gi"
+             "size": "250Gi"
         }
     }])
 ```
