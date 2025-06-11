@@ -67,7 +67,7 @@ Register 'download_images_s2' operation in the project. The function if of kind 
 function_s2 = proj.new_function(
     "download_images_s2",
     kind="container",
-    image="ghcr.io/tn-aixpa/sentinel-tools:0.11.1_dev",
+    image="ghcr.io/tn-aixpa/sentinel-tools:0.11.3",
     command="python")
 ```
 
