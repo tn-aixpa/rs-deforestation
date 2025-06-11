@@ -22,13 +22,13 @@ The product contains operations for
   - Post-process change maps to remove isolated pixels and fill gaps.
 - Log results as GeoTIFF raster files.
 
-## Requirements!
+## Requirements
 
 ### Hardware Requirements
 
 The pipelines takes around 8 hours to complete with 16 CPUs and 64GB Ram for 2 years of data which is the default period. It consists of interpolation and post processing steps which are computationally heavy since it is pixel based analysis. It is based on python joblib library for optimizations of numpy arrays. With the use of more images the interpolation will be shorter. The amount of sentinal data is huge that is whay a volume of 250Gi of type 'persistent_volume_claim' is specified to ensure significant data space.
 
-### General Requirements.
+### General Requirements
 
 - Register to the open data space copenicus(if not already) and get your credentials.
 
