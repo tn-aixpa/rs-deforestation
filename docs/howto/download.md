@@ -52,7 +52,7 @@ string_dict_data = """{
  },
  "startDate": "2018-01-01",
  "endDate": "2019-12-31",
- "geometry": "POLYGON((10.98014831542969 45.455314263477874,11.030273437500002 45.44808893044964,10.99937438964844 45.42014226680115,10.953025817871096 45.435803739956725,10.98014831542969 45.455314263477874))",
+ "geometry": "POLYGON((10.968432350469937 46.093829019481056,10.968432350469937 46.09650743619973, 10.97504139531014 46.09650743619973,10.97504139531014 46.093829019481056, 10.968432350469937 46.093829019481056))",
  "area_sampling": "true",
  "cloudCover": "[0,20]",
  "artifact_name": "data_s2_deforestation"
@@ -67,7 +67,7 @@ Register 'download_images_s2' operation in the project. The function if of kind 
 function_s2 = proj.new_function(
     "download_images_s2",
     kind="container",
-    image="ghcr.io/tn-aixpa/sentinel-tools:0.11.4",
+    image="ghcr.io/tn-aixpa/sentinel-tools:0.11.5",
     command="python")
 ```
 
