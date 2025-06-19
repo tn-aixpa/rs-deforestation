@@ -31,7 +31,7 @@ The resulting dataset will be registered as the project artifact in the datalake
 
 ## 3. Download Sentinel Data.
 
-Register to the open data space copenicus(if not already) and get your credentials.
+Register to the open data space copernicus(if not already) and get your credentials.
 
 ```
 https://identity.dataspace.copernicus.eu/auth/realms/CDSE/login-actions/registration?client_id=cdse-public&tab_id=FIiRPJeoiX4
