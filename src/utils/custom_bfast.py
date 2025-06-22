@@ -850,7 +850,7 @@ def bfast_cci(
     season: str = "none",
     max_iter: int = 1,
     max_breaks: int = 1,
-    level: float = 0.1,
+    level: float = 0.5,
     verbosity: int = 0,
 ):
     """
