@@ -58,9 +58,15 @@ def interpolate_for_year(pixel_data, dates):
     if np.all(np.isnan(monthly_values)):
         return np.zeros(12, dtype=np.float16)
     valid = ~np.isnan(monthly_values)
-    monthly_values = np.interp(np.arange(12), np.where(valid)[0], monthly_values[valid])
+    num_valid = np.sum(valid)
 
-    return monthly_values.astype(np.float16)
+    if num_valid > 3:
+        monthly_values = np.interp(np.arange(12), np.where(valid)[0], monthly_values[valid])
+        return monthly_values.astype(np.float16)
+    else:
+        return np.zeros(12, dtype=np.float16)
+    
+        
 '''    
 def interpolate_for_year(pixel_data, dates):
     month_numbers = get_month_numbers(dates)
