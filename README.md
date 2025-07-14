@@ -46,6 +46,7 @@ Tool usage documentation [here](./docs/usage.md).
 
 - [Download and preprocess sentinel forest data](./docs/howto/download.md)
 - [Run Deforesation Elaboration and log output ](./docs/howto/elaborate.md)
+- [Workflow](./docs/howto/workflow.md)
 
 ## License
 
