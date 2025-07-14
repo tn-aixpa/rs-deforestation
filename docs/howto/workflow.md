@@ -1,6 +1,6 @@
 # Workflow
 
-In this step we will create a workflow pipeline that establish a clear, repeatable process for handling the set of scenario tasks (download, elaborate). The DH platform pipeline ensures that tasks are completed in a sepcific order. It also provide the ease to fine tune the steps as per requirements of scenario imporving efficiency, consistency, aand traceability. For more detailed information about workflow and their management see the [documentation](https://scc-digitalhub.github.io/docs/tasks/workflows). Inside the project 'src' folder there exist a jypter notebook(workflow.ipynb) that depicts the creation and management of workflow.
+In this step we will create a workflow pipeline that establish a clear, repeatable process for handling the set of scenario tasks (download, elaborate). The DH platform pipeline ensures that tasks are completed in a sepcific order. It also provide the ease to fine tune the steps as per requirements of scenario imporving efficiency, consistency, aand traceability. For more detailed information about workflow and their management see the [documentation](https://scc-digitalhub.github.io/docs/tasks/workflows). Inside the project 'src' folder there exist a jypter notebook [workflow.ipynb](../../src/workflow.ipynb) that depicts the creation and management of workflow.
 
 ## 1. Initialize the project
 
@@ -11,16 +11,6 @@ import digitalhub as dh
 PROJECT_NAME = "deforestation" # here goes the project name that you are creating on the platform
 proj = dh.get_or_create_project(PROJECT_NAME)
 ```
-
-We convert the data management ETL operations into functions - single executable operations that can be executed in the platform. Create a directory named 'src' to save all the python source files.
-
-```python
-import os
-directory="src"
-if not os.path.exists(directory):
-    os.makedirs(directory)
-```
-
 ## 2. Log shape artifact
 
 Log the shape file 'bosco' which can be downloaded from the [WebGIS Portal](https://webgis.provincia.tn.it/) confine del bosco layer or from https://siatservices.provincia.tn.it/idt/vector/p_TN_3d0874bc-7b9e-4c95-b885-0f7c610b08fa.zip. Unzip the files in a folder named 'bosco' and then log it
@@ -93,7 +83,7 @@ run the following step to create 'workflow' python source file inside src direct
 - outputName (output artifact name)
 
 ```python
-%%writefile "src/deforestation_pipeline.py"
+%%writefile "deforestation_pipeline.py"
 
 from digitalhub_runtime_kfp.dsl import pipeline_context
 
@@ -128,15 +118,21 @@ def myhandler(startYear, endYear, geometry, shapeArtifactName, dataArtifactName,
                      ).after(s1)
 ```
 
-Please note that the value of optional parameter 'dataArtifactName' is set to 'data_s2_v2'. If you want to log it with different name inside to the platform. Update the pipeline code by replacing the string with parameter.
-
 ## 6. Register workflow
 
-Register workflow 'pipeline_deforestation' in the project.
+Register workflow 'pipeline_deforestation' in the project. It is required to update the 'code_src' url with github username and personal access token in the code cell below
 
 ```python
-workflow = proj.new_workflow(name="src/pipeline_deforestation", kind="kfp", code_src= "deforestation_pipeline.py", handler = "myhandler")
+workflow = proj.new_workflow(name="pipeline_deforestation", kind="kfp", code_src="git+https://<username>:<personal_access_token>@github.com/tn-aixpa/rs-deforestation", handler="src.deforestation_pipeline:myhandler")
 ```
+
+Please note that the value of optional parameter 'dataArtifactName' is set to 'data_s2_v2'. If you want to log it with different name inside to the platform. Update the pipeline code by replacing the string with parameter.
+In the following step we will register the workflow using the committed version of github repo. If you want to modify the pipeline source code, either update the existing versino on github repo or register the pipeline with local version of python source file.
+
+```python
+workflow = proj.new_workflow(name="pipeline_deforestation", kind="kfp", code_src= "deforestation_pipeline.py", handler = "myhandler")
+```
+
 
 ## 7. Build workflow
 
