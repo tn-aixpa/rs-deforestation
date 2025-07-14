@@ -1,6 +1,6 @@
 # Workflow
 
-In this step we will create a workflow pipeline that establish a clear, repeatable process for handling the set of scenario tasks (download, elaborate). The DH platform pipeline ensures that tasks are completed in a sepcific order. It also provide the ease to fine tune the steps as per requirements of scenario imporving efficiency, consistency, aand traceability. For more detailed information about workflow and their management see the [documentation](https://scc-digitalhub.github.io/docs/tasks/workflows). Insie the project 'src' folder there exist a jypter notebook(workflow.ipynb) that depicts the creation and management of workflow.
+In this step we will create a workflow pipeline that establish a clear, repeatable process for handling the set of scenario tasks (download, elaborate). The DH platform pipeline ensures that tasks are completed in a sepcific order. It also provide the ease to fine tune the steps as per requirements of scenario imporving efficiency, consistency, aand traceability. For more detailed information about workflow and their management see the [documentation](https://scc-digitalhub.github.io/docs/tasks/workflows). Inside the project 'src' folder there exist a jypter notebook(workflow.ipynb) that depicts the creation and management of workflow.
 
 ## 1. Initialize the project
 
@@ -21,7 +21,7 @@ if not os.path.exists(directory):
     os.makedirs(directory)
 ```
 
-## 2. Log the Shape artifact
+## 2. Log shape artifact
 
 Log the shape file 'bosco' which can be downloaded from the [WebGIS Portal](https://webgis.provincia.tn.it/) confine del bosco layer or from https://siatservices.provincia.tn.it/idt/vector/p_TN_3d0874bc-7b9e-4c95-b885-0f7c610b08fa.zip. Unzip the files in a folder named 'bosco' and then log it
 
@@ -40,7 +40,7 @@ artifact.key
 
 The resulting dataset will be registered as the project artifact in the datalake under the name `bosco`.
 
-## 3. register 'Download' operation in the project
+## 3. Register 'Download' operation in the project
 
 Register to the open data space copernicus(if not already) and get your credentials.
 
@@ -56,23 +56,7 @@ secret0 = proj.new_secret(name="CDSETOOL_ESA_USER", secret_value="esa_username")
 secret1 = proj.new_secret(name="CDSETOOL_ESA_PASSWORD", secret_value="esa_password")
 ```
 
-```python
-string_dict_data = """{
- "satelliteParams":{
-     "satelliteType": "Sentinel2"
- },
- "startDate": "2018-01-01",
- "endDate": "2019-12-31",
- "geometry": "POLYGON((10.968432350469937 46.093829019481056,10.968432350469937 46.09650743619973, 10.97504139531014 46.09650743619973,10.97504139531014 46.093829019481056, 10.968432350469937 46.093829019481056))",
- "area_sampling": "true",
- "cloudCover": "[0,5]",
- "artifact_name": "data_s2_deforestation"
- }"""
-
-list_args =  ["main.py",string_dict_data]
-```
-
-Register 'download_images_s2' operation in the project. The function if of kind container runtime that allows you to deploy deployments, jobs and services on Kubernetes. It uses the base image of sentinel-tools deploved in the context of project which is a wrapper for the Sentinel download and preprocessing routine for the integration with the AIxPA platform. For more details [Click here](https://github.com/tn-aixpa/sentinel-tools/). The parameters passed for sentinel downloads includes the starts and ends dates corresponding to period of two years of data. The ouput of this step will be logged inside to the platfrom project context as indicated by parameter 'artifact_name' ('data_s2_deforestation').Several other paramters can be configures as per requirements for e.g. geometry, cloud cover percentage etc.
+Register 'download_images_s2' operation in the project. The function if of kind container runtime that allows you to deploy deployments, jobs and services on Kubernetes. It uses the base image of sentinel-tools deploved in the context of project which is a wrapper for the Sentinel download and preprocessing routine for the integration with the AIxPA platform. For more details [Click here](https://github.com/tn-aixpa/sentinel-tools/).
 
 ```python
 function_s2 = proj.new_function(
@@ -104,7 +88,7 @@ run the following step to create 'workflow' python source file inside src direct
 - startYear (start year for time series analysis)
 - endYear (end year from time series analysis)
 - geometry (area of interest)
-- shapeArtifactName (shape forest mask artifact name already register in step2)
+- shapeArtifactName (shape forest mask artifact name already registered in step2)
 - dataArtifactName (optional)
 - outputName (output artifact name)
 
@@ -143,6 +127,8 @@ def myhandler(startYear, endYear, geometry, shapeArtifactName, dataArtifactName,
                      args=['/shared/launch.sh', str(shapeArtifactName), 'data_s2_v2', "[" + str(startYear) + ',' + str(endYear) + "]", str(outputName)]
                      ).after(s1)
 ```
+
+Please note that the value of optional parameter 'dataArtifactName' is set to 'data_s2_v2'. If you want to log it with different name inside to the platform. Update the pipeline code by replacing the string with parameter.
 
 ## 6. Register workflow
 
