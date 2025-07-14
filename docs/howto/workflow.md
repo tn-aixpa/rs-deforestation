@@ -121,13 +121,17 @@ There is a committed version of this file on the repo.
 
 ## 6. Register workflow
 
-Register workflow 'pipeline_deforestation' in the project. In the following step, we register the workflow using the committed version pipeline source code on github repo. It is required to update the 'code_src' url with github username and personal access token in the code cell below
+Register workflow 'pipeline_deforestation' in the project. In the following step, we register the workflow using the committed version of pipeline source code on project git repository. It is required to update the 'code_src' url with github username and personal access token in the code cell below
 
 ```python
-workflow = proj.new_workflow(name="pipeline_deforestation", kind="kfp", code_src="git+https://<username>:<personal_access_token>@github.com/tn-aixpa/rs-deforestation", handler="src.deforestation_pipeline:myhandler")
+workflow = proj.new_workflow(
+name="pipeline_deforestation",
+kind="kfp",
+code_src="git+https://<username>:<personal_access_token>@github.com/tn-aixpa/rs-deforestation",
+handler="src.deforestation_pipeline:myhandler")
 ```
 
-If you want to modify the pipeline source code, either update the existing version on github repo or register the pipeline with local version of python source file generated in prevous step for e.g. the value of parameter 'dataArtifactName' is optional and set to 'data_s2_v2' in committed version on githubt. If you want to log it with different name inside to the platform, create/update the pipeline code locally by replacing the string with parameter followed by the registration as shown below.
+If you want to modify the pipeline source code, either update the existing version on github repo or register the pipeline with local version of python source file generated in prevous step for e.g. the value of parameter 'dataArtifactName' is optional and set to 'data_s2_v2' in committed version on project repo. If you want to log it with different name inside to the DH platform project, create/update the pipeline code locally by replacing the string with parameter followed by the registration as shown below.
 
 ```python
 workflow = proj.new_workflow(name="pipeline_deforestation", kind="kfp", code_src= "deforestation_pipeline.py", handler = "myhandler")
@@ -140,7 +144,7 @@ wfbuild = workflow.run(action="build", wait=True)
 wfbuild.spec
 ```
 
-After the build, the pipeline specification and configuration is displayed as the result of this step(wfbuild.spec). The same can be achieved from the console UI dashboard or the left menu.
+After the build, the pipeline specification and configuration is displayed as the result of this step(wfbuild.spec). The same can be achieved from the console UI dashboard or the left menu using the 'INSPECTOR' button which opens a dialog containing the resource in JSON format.
 
 ```python
 {
