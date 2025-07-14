@@ -72,8 +72,7 @@ The function represent a container runtime that allows you to deploy deployments
 
 ## 5. Create workflow pipeline
 
-Workflows can be created and managed as entities similar to functions. From the console UI one can access them from the dashboard or the left menu.
-run the following step to create 'workflow' python source file inside src directory. The workflow handler takes as input
+Workflows can be created and managed as entities similar to functions. From the console UI one can access them from the dashboard or the left menu. Run the following step to create 'workflow' python source file inside src directory. The workflow handler takes as input
 
 - startYear (start year for time series analysis)
 - endYear (end year from time series analysis)
@@ -118,21 +117,21 @@ def myhandler(startYear, endYear, geometry, shapeArtifactName, dataArtifactName,
                      ).after(s1)
 ```
 
+There is a committed version of this file on the repo.
+
 ## 6. Register workflow
 
-Register workflow 'pipeline_deforestation' in the project. It is required to update the 'code_src' url with github username and personal access token in the code cell below
+Register workflow 'pipeline_deforestation' in the project. In the following step, we register the workflow using the committed version pipeline source code on github repo. It is required to update the 'code_src' url with github username and personal access token in the code cell below
 
 ```python
 workflow = proj.new_workflow(name="pipeline_deforestation", kind="kfp", code_src="git+https://<username>:<personal_access_token>@github.com/tn-aixpa/rs-deforestation", handler="src.deforestation_pipeline:myhandler")
 ```
 
-Please note that the value of optional parameter 'dataArtifactName' is set to 'data_s2_v2'. If you want to log it with different name inside to the platform. Update the pipeline code by replacing the string with parameter.
-In the following step we will register the workflow using the committed version of github repo. If you want to modify the pipeline source code, either update the existing versino on github repo or register the pipeline with local version of python source file.
+If you want to modify the pipeline source code, either update the existing version on github repo or register the pipeline with local version of python source file generated in prevous step for e.g. the value of parameter 'dataArtifactName' is optional and set to 'data_s2_v2' in committed version on githubt. If you want to log it with different name inside to the platform, create/update the pipeline code locally by replacing the string with parameter followed by the registration as shown below.
 
 ```python
 workflow = proj.new_workflow(name="pipeline_deforestation", kind="kfp", code_src= "deforestation_pipeline.py", handler = "myhandler")
 ```
-
 
 ## 7. Build workflow
 
