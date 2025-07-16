@@ -11,6 +11,7 @@ import digitalhub as dh
 PROJECT_NAME = "deforestation" # here goes the project name that you are creating on the platform
 proj = dh.get_or_create_project(PROJECT_NAME)
 ```
+
 ## 2. Log shape artifact
 
 Log the shape file 'bosco' which can be downloaded from the [WebGIS Portal](https://webgis.provincia.tn.it/) confine del bosco layer or from https://siatservices.provincia.tn.it/idt/vector/p_TN_3d0874bc-7b9e-4c95-b885-0f7c610b08fa.zip. Unzip the files in a folder named 'bosco' and then log it
@@ -80,6 +81,8 @@ Workflows can be created and managed as entities similar to functions. From the 
 - shapeArtifactName (shape forest mask artifact name already registered in step2)
 - dataArtifactName (optional)
 - outputName (output artifact name)
+
+The inputs are used inside to the workflow among different functions. The first step performs sentinel downloads using the function created in previous step. The download function takes as input a list of arguments (args=["main.py", string_dict_data]) where the first argument is the python script file that will be launched inside to the container and the second argument is the json input string which includes all the necessary parameters of sentinel download operation like date, geometry, product type, cloud cover etc. For more details [Click here](https://github.com/tn-aixpa/sentinel-tools/). The last step of workflow perform elaboration using the 'elaborate' function created in previous step. The elaboration function taks as input a list of arguments where the first argument is the bash script that will be launched on entry inside to the container while the following parameters contains both fixed and dynamic parameters. The fixed parameter includes project artifacts names (data_s2_v2), which is downloaded as the result of first step. The set of dynamic parameters included outputName, startYear, endYear, geometry etc. which can be passed as input to the main workflow. The workflow can be adopted as per context needs by modifying/passing the different parametric values as depicted in 'Register workflow' section.
 
 ```python
 %%writefile "deforestation_pipeline.py"
