@@ -1,10 +1,11 @@
+
 # Workflow
 
-In this step we will create a workflow pipeline that establish a clear, repeatable process for handling the set of scenario tasks (download, elaborate). The DH platform pipeline ensures that tasks are completed in a sepcific order. It also provide the ease to fine tune the steps as per requirements of scenario imporving efficiency, consistency, aand traceability. For more detailed information about workflow and their management see the [documentation](https://scc-digitalhub.github.io/docs/tasks/workflows). Inside the project 'src' folder there exist a jypter notebook [workflow.ipynb](../../src/workflow.ipynb) that depicts the creation and management of workflow.
+<p align="justify">In this step we will create a workflow pipeline that establish a clear, repeatable process for handling the set of scenario tasks (download, elaborate). The DH platform pipeline ensures that tasks are completed in a sepcific order. It also provide the ease to fine tune the steps as per requirements of scenario imporving efficiency, consistency, aand traceability. For more detailed information about workflow and their management see the [documentation](https://scc-digitalhub.github.io/docs/tasks/workflows). Inside the project 'src' folder there exist a jypter notebook [workflow.ipynb](../../src/workflow.ipynb) that depicts the creation and management of workflow.</p>
 
 ## 1. Initialize the project
 
-Create the working context: data management project for scenario. Project is a placeholder for the code, data, and management of the data operations and workflows. To keep it reproducible, we use the git source type to store the definition and code.
+<p align="justify">Create the working context: data management project for scenario. Project is a placeholder for the code, data, and management of the data operations and workflows. To keep it reproducible, we use the git source type to store the definition and code.</p>
 
 ```python
 import digitalhub as dh
@@ -14,7 +15,7 @@ proj = dh.get_or_create_project(PROJECT_NAME)
 
 ## 2. Log shape artifact
 
-Log the shape file 'bosco' which can be downloaded from the [WebGIS Portal](https://webgis.provincia.tn.it/) confine del bosco layer or from https://siatservices.provincia.tn.it/idt/vector/p_TN_3d0874bc-7b9e-4c95-b885-0f7c610b08fa.zip. Unzip the files in a folder named 'bosco' and then log it
+<p align="justify">Log the shape file 'bosco' which can be downloaded from the [WebGIS Portal](https://webgis.provincia.tn.it/) confine del bosco layer or from https://siatservices.provincia.tn.it/idt/vector/p_TN_3d0874bc-7b9e-4c95-b885-0f7c610b08fa.zip. Unzip the files in a folder named 'bosco' and then log it</p>
 
 ```python
 artifact_name='bosco'
@@ -47,7 +48,7 @@ secret0 = proj.new_secret(name="CDSETOOL_ESA_USER", secret_value="esa_username")
 secret1 = proj.new_secret(name="CDSETOOL_ESA_PASSWORD", secret_value="esa_password")
 ```
 
-Register 'download_images_s2' operation in the project. The function if of kind container runtime that allows you to deploy deployments, jobs and services on Kubernetes. It uses the base image of sentinel-tools deploved in the context of project which is a wrapper for the Sentinel download and preprocessing routine for the integration with the AIxPA platform. For more details [Click here](https://github.com/tn-aixpa/sentinel-tools/).
+<p align="justify">Register 'download_images_s2' operation in the project. The function if of kind container runtime that allows you to deploy deployments, jobs and services on Kubernetes. It uses the base image of sentinel-tools deploved in the context of project which is a wrapper for the Sentinel download and preprocessing routine for the integration with the AIxPA platform. For more details [Click here](https://github.com/tn-aixpa/sentinel-tools/).</p>
 
 ```python
 function_s2 = proj.new_function(
@@ -69,11 +70,11 @@ function_rs = proj.new_function(
     )
 ```
 
-The function represent a container runtime that allows you to deploy deployments, jobs and services on Kubernetes. It uses the base image of rs-deforestation container deploved in the context of project create the environment required for the execution. It invovles pulling the base image with gdal installed and installing all the required libraries and launch instructions specified by 'launch.sh' file.
+<p align="justify">The function represent a container runtime that allows you to deploy deployments, jobs and services on Kubernetes. It uses the base image of rs-deforestation container deploved in the context of project create the environment required for the execution. It invovles pulling the base image with gdal installed and installing all the required libraries and launch instructions specified by 'launch.sh' file.</p>
 
 ## 5. Create workflow pipeline
 
-Workflows can be created and managed as entities similar to functions. From the console UI one can access them from the dashboard or the left menu. Run the following step to create 'workflow' python source file inside src directory. The workflow handler takes as input
+<p align="justify">Workflows can be created and managed as entities similar to functions. From the console UI one can access them from the dashboard or the left menu. Run the following step to create 'workflow' python source file inside src directory. The workflow handler takes as input</p>
 
 - startYear (start year for time series analysis)
 - endYear (end year from time series analysis)
@@ -82,7 +83,7 @@ Workflows can be created and managed as entities similar to functions. From the 
 - dataArtifactName (optional)
 - outputName (output artifact name)
 
-The inputs are used inside to the workflow among different functions. The first step performs sentinel downloads using the function created in previous step. The download function takes as input a list of arguments (args=["main.py", string_dict_data]) where the first argument is the python script file that will be launched inside to the container and the second argument is the json input string which includes all the necessary parameters of sentinel download operation like date, geometry, product type, cloud cover etc. For more details [Click here](https://github.com/tn-aixpa/sentinel-tools/). The last step of workflow perform elaboration using the 'elaborate' function created in previous step. The elaboration function taks as input a list of arguments where the first argument is the bash script that will be launched on entry inside to the container while the following parameters contains both fixed and dynamic parameters. The fixed parameter includes project artifacts names (data_s2_v2), which is downloaded as the result of first step. The set of dynamic parameters included outputName, startYear, endYear, geometry etc. which can be passed as input to the main workflow. The workflow can be adopted as per context needs by modifying/passing the different parametric values as depicted in 'Register workflow' section.
+<p align="justify">The inputs are used inside to the workflow among different functions. The first step performs sentinel downloads using the function created in previous step. The download function takes as input a list of arguments (args=["main.py", string_dict_data]) where the first argument is the python script file that will be launched inside to the container and the second argument is the json input string which includes all the necessary parameters of sentinel download operation like date, geometry, product type, cloud cover etc. For more details [Click here](https://github.com/tn-aixpa/sentinel-tools/). The last step of workflow perform elaboration using the 'elaborate' function created in previous step. The elaboration function taks as input a list of arguments where the first argument is the bash script that will be launched on entry inside to the container while the following parameters contains both fixed and dynamic parameters. The fixed parameter includes project artifacts names (data_s2_v2), which is downloaded as the result of first step. The set of dynamic parameters included outputName, startYear, endYear, geometry etc. which can be passed as input to the main workflow. The workflow can be adopted as per context needs by modifying/passing the different parametric values as depicted in 'Register workflow' section.</p>
 
 ```python
 %%writefile "deforestation_pipeline.py"
@@ -124,7 +125,7 @@ There is a committed version of this file on the repo.
 
 ## 6. Register workflow
 
-Register workflow 'pipeline_deforestation' in the project. In the following step, we register the workflow using the committed version of pipeline source code on project git repository. It is required to update the 'code_src' url with github username and personal access token in the code cell below
+<p align="justify">Register workflow 'pipeline_deforestation' in the project. In the following step, we register the workflow using the committed version of pipeline source code on project git repository. It is required to update the 'code_src' url with github username and personal access token in the code cell below</p>
 
 ```python
 workflow = proj.new_workflow(
@@ -134,7 +135,7 @@ code_src="git+https://<username>:<personal_access_token>@github.com/tn-aixpa/rs-
 handler="src.deforestation_pipeline:myhandler")
 ```
 
-If you want to modify the pipeline source code, either update the existing version on github repo or register the pipeline with local version of python source file generated in prevous step for e.g. the value of parameter 'dataArtifactName' is optional and set to 'data_s2_v2' in committed version on project repo. If you want to log it with different name inside to the DH platform project, create/update the pipeline code locally by replacing the string with parameter followed by the registration as shown below.
+<p align="justify">If you want to modify the pipeline source code, either update the existing version on github repo or register the pipeline with local version of python source file generated in prevous step for e.g. the value of parameter 'dataArtifactName' is optional and set to 'data_s2_v2' in committed version on project repo. If you want to log it with different name inside to the DH platform project, create/update the pipeline code locally by replacing the string with parameter followed by the registration as shown below.</p>
 
 ```python
 workflow = proj.new_workflow(name="pipeline_deforestation", kind="kfp", code_src= "deforestation_pipeline.py", handler = "myhandler")
@@ -158,4 +159,4 @@ After the build, the pipeline specification and configuration is displayed as th
   }
 ```
 
-In order to integrate the pipeline with the front end UI 'rsde-pipeline-manger', the value of 'task' and 'workflow' keys are the two important configuration parameters that must be set in the in the configuration(config.yml) as taskId and workflowId. For more detailed information see [rsde-pipeline-manger](https://github.com/tn-aixpa/rsde-pipeline-manager)
+<p align="justify">In order to integrate the pipeline with the front end UI 'rsde-pipeline-manger', the value of 'task' and 'workflow' keys are the two important configuration parameters that must be set in the in the configuration(config.yml) as taskId and workflowId. For more detailed information see [rsde-pipeline-manger](https://github.com/tn-aixpa/rsde-pipeline-manager)</p>
