@@ -36,7 +36,7 @@ The product contains operations for
 https://identity.dataspace.copernicus.eu/auth/realms/CDSE/login-actions/registration?client_id=cdse-public&tab_id=FIiRPJeoiX4
 ```
 
-- Shape file can be downloaded from the [WebGIS Portal](https://webgis.provincia.tn.it/) confine del bosco layer or from https://siatservices.provincia.tn.it/idt/vector/p_TN_3d0874bc-7b9e-4c95-b885-0f7c610b08fa.zip. More details in download [step](./docs/howto/download.md)
+- <p align="justify">Shape file can be downloaded from the <a href="https://webgis.provincia.tn.it/">WebGIS Portal</a> confine del bosco layer or from direct <a href="https://siatservices.provincia.tn.it/idt/vector/p_TN_3d0874bc-7b9e-4c95-b885-0f7c610b08fa.zip">link</a> to zip file. More details in download <a href="./docs/howto/download.md">step</a></p>
 
 ## Usage
 
