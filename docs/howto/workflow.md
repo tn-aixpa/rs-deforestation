@@ -1,7 +1,7 @@
 
 # Workflow
 
-<p align="justify">In this step we will create a workflow pipeline that establish a clear, repeatable process for handling the set of scenario tasks (download, elaborate). The DH platform pipeline ensures that tasks are completed in a sepcific order. It also provide the ease to fine tune the steps as per requirements of scenario imporving efficiency, consistency, aand traceability. For more detailed information about workflow and their management see the [documentation](https://scc-digitalhub.github.io/docs/tasks/workflows). Inside the project 'src' folder there exist a jypter notebook [workflow.ipynb](../../src/workflow.ipynb) that depicts the creation and management of workflow.</p>
+<p align="justify">In this step we will create a workflow pipeline that establish a clear, repeatable process for handling the set of scenario tasks (download, elaborate). The DH platform pipeline ensures that tasks are completed in a sepcific order. It also provide the ease to fine tune the steps as per requirements of scenario imporving efficiency, consistency, aand traceability. For more detailed information about workflow and their management see the <a href="https://scc-digitalhub.github.io/docs/tasks/workflows">documentation</a>. Inside the project 'src' folder there exist a jypter notebook <a href="../../src/workflow.ipynb">workflow.ipynb</a> that depicts the creation and management of workflow.</p>
 
 ## 1. Initialize the project
 
@@ -15,7 +15,7 @@ proj = dh.get_or_create_project(PROJECT_NAME)
 
 ## 2. Log shape artifact
 
-<p align="justify">Log the shape file 'bosco' which can be downloaded from the [WebGIS Portal](https://webgis.provincia.tn.it/) confine del bosco layer or from https://siatservices.provincia.tn.it/idt/vector/p_TN_3d0874bc-7b9e-4c95-b885-0f7c610b08fa.zip. Unzip the files in a folder named 'bosco' and then log it</p>
+<p align="justify">Log the shape file 'bosco' which can be downloaded from the <a href="https://webgis.provincia.tn.it/">WebGIS Portal</a> confine del bosco layer or using direct <a href="https://siatservices.provincia.tn.it/idt/vector/p_TN_3d0874bc-7b9e-4c95-b885-0f7c610b08fa.zip">link</a> to zip file. Unzip the files in a folder named 'bosco' and then log it</p>
 
 ```python
 artifact_name='bosco'
@@ -48,7 +48,7 @@ secret0 = proj.new_secret(name="CDSETOOL_ESA_USER", secret_value="esa_username")
 secret1 = proj.new_secret(name="CDSETOOL_ESA_PASSWORD", secret_value="esa_password")
 ```
 
-<p align="justify">Register 'download_images_s2' operation in the project. The function if of kind container runtime that allows you to deploy deployments, jobs and services on Kubernetes. It uses the base image of sentinel-tools deploved in the context of project which is a wrapper for the Sentinel download and preprocessing routine for the integration with the AIxPA platform. For more details [Click here](https://github.com/tn-aixpa/sentinel-tools/).</p>
+<p align="justify">Register 'download_images_s2' operation in the project. The function if of kind container runtime that allows you to deploy deployments, jobs and services on Kubernetes. It uses the base image of sentinel-tools deploved in the context of project which is a wrapper for the Sentinel download and preprocessing routine for the integration with the AIxPA platform. For more details click <a href="https://github.com/tn-aixpa/sentinel-tools/)">here</a></p>
 
 ```python
 function_s2 = proj.new_function(
@@ -83,7 +83,7 @@ function_rs = proj.new_function(
 - dataArtifactName (optional)
 - outputName (output artifact name)
 
-<p align="justify">The inputs are used inside to the workflow among different functions. The first step performs sentinel downloads using the function created in previous step. The download function takes as input a list of arguments (args=["main.py", string_dict_data]) where the first argument is the python script file that will be launched inside to the container and the second argument is the json input string which includes all the necessary parameters of sentinel download operation like date, geometry, product type, cloud cover etc. For more details [Click here](https://github.com/tn-aixpa/sentinel-tools/). The last step of workflow perform elaboration using the 'elaborate' function created in previous step. The elaboration function taks as input a list of arguments where the first argument is the bash script that will be launched on entry inside to the container while the following parameters contains both fixed and dynamic parameters. The fixed parameter includes project artifacts names (data_s2_v2), which is downloaded as the result of first step. The set of dynamic parameters included outputName, startYear, endYear, geometry etc. which can be passed as input to the main workflow. The workflow can be adopted as per context needs by modifying/passing the different parametric values as depicted in 'Register workflow' section.</p>
+<p align="justify">The inputs are used inside to the workflow among different functions. The first step performs sentinel downloads using the function created in previous step. The download function takes as input a list of arguments (args=["main.py", string_dict_data]) where the first argument is the python script file that will be launched inside to the container and the second argument is the json input string which includes all the necessary parameters of sentinel download operation like date, geometry, product type, cloud cover etc. For more details click <a href="https://github.com/tn-aixpa/sentinel-tools/">here</a>. The last step of workflow perform elaboration using the 'elaborate' function created in previous step. The elaboration function taks as input a list of arguments where the first argument is the bash script that will be launched on entry inside to the container while the following parameters contains both fixed and dynamic parameters. The fixed parameter includes project artifacts names (data_s2_v2), which is downloaded as the result of first step. The set of dynamic parameters included outputName, startYear, endYear, geometry etc. which can be passed as input to the main workflow. The workflow can be adopted as per context needs by modifying/passing the different parametric values as depicted in 'Register workflow' section.</p>
 
 ```python
 %%writefile "deforestation_pipeline.py"
