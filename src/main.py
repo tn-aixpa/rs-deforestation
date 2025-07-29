@@ -228,7 +228,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
             confidence = np.concatenate(all_confidence, axis=0) 
 
             # Compute change maps and accuracy maps
-            changemaps = breaks // freq
+            changemaps = breaks 
             accuracymaps = confidence
             changemaps = changemaps.reshape(height, width)
             accuracymaps = accuracymaps.reshape(height, width)
