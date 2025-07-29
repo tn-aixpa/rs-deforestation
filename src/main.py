@@ -242,14 +242,14 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
 
 
             # Save results
-            np.save(changemaps_path, changemaps_year)
+            np.save(changemaps_path, changemaps)
             np.save(accuracymaps_path, accuracymaps)
             print(f"Saved changemaps_year to: {changemaps_path}")
             print(f"Saved accuracymaps to: {accuracymaps_path}")      
             
         print('Start post processing:')
         # Remove isolated pixels
-        updated_change_array, updated_probability_array = pp.remove_isolated_pixels(changemaps_year, accuracymaps)
+        updated_change_array, updated_probability_array = pp.remove_isolated_pixels(changemaps, accuracymaps)
         
         print('Fill gaps and update probabilities:')
         # Fill gaps and update probabilities
