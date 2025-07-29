@@ -231,11 +231,13 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
             accuracymaps = confidence
             changemaps = changemaps.reshape(height, width)
             accuracymaps = accuracymaps.reshape(height, width)
+            changemaps[(changemaps >= 13)] = 0
+            accuracymaps[changemaps == 0] = 0
 
             # Convert index to year
-            changemaps_year = np.zeros_like(changemaps, dtype=int)
-            for i, year in enumerate(years_np):
-                changemaps_year[changemaps == i] = year
+            # changemaps_year = np.zeros_like(changemaps, dtype=int)
+            # for i, year in enumerate(years_np):
+            #     changemaps_year[changemaps == i] = year
 
 
             # Save results
@@ -258,7 +260,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
         final_probability_array[final_probability_array ==0 ] = np.nan    
         
         # Save output 
-        output_filename_process = fm.joinpath(outpath,f"CD_2018_2019_{k}.tif")
+        output_filename_process = fm.joinpath(outpath,f"CD_2018_{k}.tif")
         
         fm.writeGeoTIFFD(output_filename_process, np.stack([final_change_array, final_probability_array], axis=-1), geotransform, projection) 
 
