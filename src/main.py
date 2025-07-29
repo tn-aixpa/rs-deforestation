@@ -14,6 +14,7 @@ from tqdm import tqdm
 import digitalhub as dh
 from utils.skd_handler import upload_artifact
 import json
+import zipfile
 
 
 def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
@@ -307,5 +308,18 @@ if __name__ == "__main__":
     deforestation(sensor, years, maindir, boscopath, datapath, outpath)
     
     #upload output artifact
-    print(f"Upoading artifact: {output_artifact_name}, {output_artifact_name}")
-    upload_artifact(artifact_name=output_artifact_name,project_name=project_name,src_path=outpath)
+    # print(f"Upoading artifact: {output_artifact_name}, {output_artifact_name}")
+    # upload_artifact(artifact_name=output_artifact_name,project_name=project_name,src_path=outpath)
+
+    #upload output artifact
+    zip_file = os.path.join(outpath, output_artifact_name + '.zip')
+    print(f"Creating zip file: {zip_file}")
+    zf = zipfile.ZipFile(zip_file, "w")
+    for dirname, subdirs, files in os.walk(outpath):
+        for filename in files:
+            if(filename.endswith('.tif') or filename.endswith('.tiff')):
+                print(f"Adding {filename} to the zip file")
+                zf.write(os.path.join(dirname, filename), arcname=filename)
+    zf.close()
+    print(f"Uploading artifact: {zip_file}")
+    upload_artifact(artifact_name=output_artifact_name,project_name=project_name,src_path=zip_file)
