@@ -5,3 +5,4 @@
 output
 bosco
 *.env
+src/jypter_notebook.ipynb

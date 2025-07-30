@@ -14,6 +14,7 @@ from tqdm import tqdm
 import digitalhub as dh
 from utils.skd_handler import upload_artifact
 import json
+import zipfile
 
 
 def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
@@ -33,7 +34,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
         
         if sensor == 'S2':
             tile = L2Atile(maindir, tileDatapath)
-
+        
         # Initialize empty storage for all years
         
         feature_file = os.path.join(outpath, 'feature_all.dat')
@@ -57,9 +58,6 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
             height, width = ts[0].feature('B04').shape
             geotransform, projection = fm.getGeoTIFFmeta(ts[0].featurepath()['B04'])
             ts_length = len(ts)
-
-        
-           
 
             if timestep_index == 0:
                 # Initialize memory-mapped arrays with estimated total time steps
@@ -227,26 +225,28 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
             confidence = np.concatenate(all_confidence, axis=0) 
 
             # Compute change maps and accuracy maps
-            changemaps = breaks // freq
+            changemaps = breaks 
             accuracymaps = confidence
             changemaps = changemaps.reshape(height, width)
             accuracymaps = accuracymaps.reshape(height, width)
+            changemaps[(changemaps >= 13)] = 0
+            accuracymaps[changemaps == 0] = 0
 
             # Convert index to year
-            changemaps_year = np.zeros_like(changemaps, dtype=int)
-            for i, year in enumerate(years_np):
-                changemaps_year[changemaps == i] = year
+            # changemaps_year = np.zeros_like(changemaps, dtype=int)
+            # for i, year in enumerate(years_np):
+            #     changemaps_year[changemaps == i] = year
 
 
             # Save results
-            np.save(changemaps_path, changemaps_year)
+            np.save(changemaps_path, changemaps)
             np.save(accuracymaps_path, accuracymaps)
             print(f"Saved changemaps_year to: {changemaps_path}")
             print(f"Saved accuracymaps to: {accuracymaps_path}")      
             
         print('Start post processing:')
         # Remove isolated pixels
-        updated_change_array, updated_probability_array = pp.remove_isolated_pixels(changemaps_year, accuracymaps)
+        updated_change_array, updated_probability_array = pp.remove_isolated_pixels(changemaps, accuracymaps)
         
         print('Fill gaps and update probabilities:')
         # Fill gaps and update probabilities
@@ -258,7 +258,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
         final_probability_array[final_probability_array ==0 ] = np.nan    
         
         # Save output 
-        output_filename_process = fm.joinpath(outpath,f"CD_2018_2019_{k}.tif")
+        output_filename_process = fm.joinpath(outpath,f"CD_2018_{k}.tif")
         
         fm.writeGeoTIFFD(output_filename_process, np.stack([final_change_array, final_probability_array], axis=-1), geotransform, projection) 
 
@@ -271,7 +271,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
         minutes = (end_time - start_time) / 60
         print(f"Execution time: {minutes:.2f} minutes")
          
-# "{'shape':'bosco', 'data': 'data', 'years':['2018', '2019'], 'outputArtifactName': 'deforestation_output'}"
+# python main.py "{'shapeArtifactName':'bosco', 'data': 'data', 'years':['2018', '2019'], 'dataArtifactName': 'data_s2_tpr', 'outputArtifactName': 'deforestation_output'}"
 
 if __name__ == "__main__":
     args = sys.argv[1].replace("'","\"")
@@ -305,5 +305,18 @@ if __name__ == "__main__":
     deforestation(sensor, years, maindir, boscopath, datapath, outpath)
     
     #upload output artifact
-    print(f"Upoading artifact: {output_artifact_name}, {output_artifact_name}")
-    upload_artifact(artifact_name=output_artifact_name,project_name=project_name,src_path=outpath)
+    # print(f"Upoading artifact: {output_artifact_name}, {output_artifact_name}")
+    # upload_artifact(artifact_name=output_artifact_name,project_name=project_name,src_path=outpath)
+
+    #upload output artifact
+    zip_file = os.path.join(outpath, output_artifact_name + '.zip')
+    print(f"Creating zip file: {zip_file}")
+    zf = zipfile.ZipFile(zip_file, "w")
+    for dirname, subdirs, files in os.walk(outpath):
+        for filename in files:
+            if(filename.endswith('.tif') or filename.endswith('.tiff')):
+                print(f"Adding {filename} to the zip file")
+                zf.write(os.path.join(dirname, filename), arcname=filename)
+    zf.close()
+    print(f"Uploading artifact: {zip_file}")
+    upload_artifact(artifact_name=output_artifact_name,project_name=project_name,src_path=zip_file)
