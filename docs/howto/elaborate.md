@@ -6,7 +6,7 @@
 function_rs = proj.new_function(
     "elaborate",
     kind="container",
-    image="ghcr.io/tn-aixpa/rs-deforestation:2.7_b6",
+    image="ghcr.io/tn-aixpa/rs-deforestation:2.7_b8",
     command="/bin/bash",
     code_src="launch.sh"
     )
