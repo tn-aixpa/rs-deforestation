@@ -32,8 +32,12 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
         tileDatapath = tiledict[k]
         print(f"Reading Tile-{k}.")
         
-        if sensor == 'S2':
-            tile = L2Atile(maindir, tileDatapath)
+        try:
+            if sensor == 'S2':
+                 tile = L2Atile(maindir, tileDatapath)
+        except Exception as e:
+            print(f"Error reading tile {k}: {e}")
+            continue
 
         # Initialize empty storage for all years
         
@@ -58,9 +62,6 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
             height, width = ts[0].feature('B04').shape
             geotransform, projection = fm.getGeoTIFFmeta(ts[0].featurepath()['B04'])
             ts_length = len(ts)
-
-        
-           
 
             if timestep_index == 0:
                 # Initialize memory-mapped arrays with estimated total time steps
@@ -274,7 +275,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
         minutes = (end_time - start_time) / 60
         print(f"Execution time: {minutes:.2f} minutes")
          
-# "{'shape':'bosco', 'data': 'data', 'years':['2018', '2019'], 'outputArtifactName': 'deforestation_output'}"
+# python main.py "{'shapeArtifactName':'bosco', 'data': 'data', 'years':['2018', '2019'], 'dataArtifactName': 'data_s2_tpr', 'outputArtifactName': 'deforestation_output'}"
 
 if __name__ == "__main__":
     args = sys.argv[1].replace("'","\"")
