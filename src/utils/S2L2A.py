@@ -109,7 +109,11 @@ class L2Ats:
             for idx,fp in enumerate(filepaths):               
                 print('Reading image %i/%i   ' %((idx+1), totimg) , end='\r') 
                 #READ IMAGE                 
-                img = S2L2Aimg().readL2A(fp, temppath)
+                try:
+                   img = S2L2Aimg().readL2A(fp, temppath)
+                except Exception as e:
+                    print(f"Error reading image {fp}: {e}")
+                    continue
 
                 #CHECK FOR DUPLICATES
                 key = img.name()

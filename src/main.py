@@ -32,13 +32,9 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
         tileDatapath = tiledict[k]
         print(f"Reading Tile-{k}.")
         
-        try:
-            if sensor == 'S2':
-                 tile = L2Atile(maindir, tileDatapath)
-        except Exception as e:
-            print(f"Error reading tile {k}: {e}")
-            continue
-
+        if sensor == 'S2':
+            tile = L2Atile(maindir, tileDatapath)
+        
         # Initialize empty storage for all years
         
         feature_file = os.path.join(outpath, 'feature_all.dat')
