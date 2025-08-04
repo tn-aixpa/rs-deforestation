@@ -1,4 +1,4 @@
-FROM ghcr.io/tn-aixpa/rsde-tools:2.6
+FROM ghcr.io/tn-aixpa/rsde-tools:2.7_b1
 
 
 RUN conda init bash && . ~/.bashrc 
@@ -9,7 +9,6 @@ COPY requirements.txt .
 RUN mkdir /app/utils
 COPY utils /app/utils
 RUN mkdir /app/data
-RUN mkdir /app/output
 RUN mkdir /app/bosco
 
 RUN python -m pip install -r requirements.txt
