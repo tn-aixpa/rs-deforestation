@@ -282,7 +282,10 @@ if __name__ == "__main__":
     maindir = '.'
     boscopath = 'bosco'
     datapath = 'data'
-    outpath = 'output'
+    result_folder = 'output'
+    outpath = os.path.join(maindir, datapath, result_folder)
+    if not os.path.exists(outpath):
+        os.makedirs(outpath)
     temppath = fm.joinpath(maindir, 'numpy')
     
     shape = json_input['shapeArtifactName'] #shape artifact name (e.g., 'bosco')
