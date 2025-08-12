@@ -33,7 +33,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
         print(f"Reading Tile-{k}.")
         
         if sensor == 'S2':
-            tile = L2Atile(maindir, datapath, tileDatapath)
+            tile = L2Atile(os.path.join(maindir, datapath), tileDatapath)
         
         # Initialize empty storage for all years
         
