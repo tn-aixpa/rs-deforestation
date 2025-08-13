@@ -33,7 +33,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
         print(f"Reading Tile-{k}.")
         
         if sensor == 'S2':
-            tile = L2Atile(maindir, tileDatapath)
+            tile = L2Atile(os.path.join(maindir, datapath), tileDatapath)
         
         # Initialize empty storage for all years
         
@@ -45,7 +45,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
 
         for y in years:
             # Set temporary path for the current year
-            temppath = fm.joinpath(maindir, 'numpy', k)
+            temppath = fm.joinpath(maindir, datapath, 'numpy', k)
 
             # Get features for the current year
             ts, _, _ = tile.gettimeseries(year=y, option='default')
@@ -286,7 +286,7 @@ if __name__ == "__main__":
     outpath = os.path.join(maindir, datapath, result_folder)
     if not os.path.exists(outpath):
         os.makedirs(outpath)
-    temppath = fm.joinpath(maindir, 'numpy')
+    # temppath = fm.joinpath(maindir, 'numpy')
     
     shape = json_input['shapeArtifactName'] #shape artifact name (e.g., 'bosco')
     project_name=os.environ["PROJECT_NAME"] #project name (e.g., 'deforestation')
