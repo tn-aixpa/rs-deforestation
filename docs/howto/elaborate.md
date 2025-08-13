@@ -26,7 +26,7 @@ run_el = function_rs.run(
     volumes=[{
         "volume_type": "persistent_volume_claim",
         "name": "volume-deforestation",
-        "mount_path": "/app/files",
+        "mount_path": "/app/data",
         "spec": { "size": "250Gi" }
     }],
     args=['/shared/launch.sh', 'bosco', 'data_s2_deforestation', '[2018,2019]',  'deforestation_2018_19']

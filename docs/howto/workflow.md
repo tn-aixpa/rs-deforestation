@@ -114,7 +114,7 @@ def myhandler(startYear, endYear, geometry, shapeArtifactName, dataArtifactName,
                      volumes=[{
                         "volume_type": "persistent_volume_claim",
                         "name": "volume-deforestation",
-                        "mount_path": "/app/files",
+                        "mount_path": "/app/data",
                         "spec": { "size": "250Gi" }
                     }],
                      args=['/shared/launch.sh', str(shapeArtifactName), 'data_s2_v2', "[" + str(startYear) + ',' + str(endYear) + "]", str(outputName)]
