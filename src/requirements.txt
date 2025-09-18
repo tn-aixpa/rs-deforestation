@@ -1,4 +1,4 @@
-geopandas==0.12.0
+geopandas==0.13.0
 joblib==1.4.2
 matplotlib==3.5.3
 numpy>=1.20.0
@@ -8,4 +8,4 @@ Shapely==2.0.7
 statsmodels==0.14.4
 tqdm==4.67.1
 cryptography==38.0.4
-digitalhub==0.13.0
+digitalhub==0.12.0
