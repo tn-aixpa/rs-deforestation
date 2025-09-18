@@ -239,7 +239,7 @@ if __name__ == "__main__":
     zf = zipfile.ZipFile(zip_file, "w")
     for dirname, subdirs, files in os.walk(outpath):
         for filename in files:
-            if filename.endswith('.tif') or filename.endswith('.tiff'):
+            if filename.endswith('.tif') or filename.endswith('.tiff') or filename.endswith('.npy') or filename.endswith('.dat') or filename.endswith('.json') :
                 print(f"Adding {filename} to the zip file")
                 zf.write(os.path.join(dirname, filename), arcname=filename)
     zf.close()
