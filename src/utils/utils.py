@@ -78,22 +78,39 @@ def interpolate_for_year(pixel_data, dates):
         return np.zeros(12)
     return np.interp(target_months, valid_months, valid_data).astype(np.float16)
 '''
-# Interpolate data for both years
-def interpolate_time_series(pixel_data, dates_2018, dates_2019):
-    pixel_data_2018 = pixel_data[:len(dates_2018)]
-    pixel_data_2019 = pixel_data[len(dates_2018):]
-    interpolated_2018 = interpolate_for_year(pixel_data_2018, dates_2018)
-    interpolated_2019 = interpolate_for_year(pixel_data_2019, dates_2019)
-    return np.concatenate([interpolated_2018, interpolated_2019]).astype(np.float16)
+def interpolate_time_series(pixel_data, dates_per_year):
+    """
+    Interpolates a pixel time series for any number of years.
+    
+   """
+    results = []
+    start_idx = 0
+    for year_dates in dates_per_year:
+        n = len(year_dates)
+        year_data = pixel_data[start_idx:start_idx+n]
+        interpolated = interpolate_for_year(year_data, year_dates)
+        results.append(interpolated)
+        start_idx += n
+    return np.concatenate(results).astype(np.float16)
+
+
+
+
 
 # Fusion of NDVI and BSI
 def fuse_features(ndvi, bsi):
     return np.sqrt((ndvi ** 2 + bsi ** 2) / 2).astype(np.float16)
-    
-    
-# Interpolate parallel processing 
 
-def parallel_interpolate(feature_data, dates_2018, dates_2019, chunk_size=12056040, n_jobs=-1):
+
+    
+    
+# Interpolate parallel processing
+
+def parallel_interpolate(feature_data, dates_per_year, chunk_size=12056040, n_jobs=-1):
+    """
+    Parallel interpolation for any number of years.
+
+    """
     height, width, _ = feature_data.shape
     flat_pixels = feature_data.reshape(-1, feature_data.shape[2])
     total = flat_pixels.shape[0]
@@ -102,13 +119,15 @@ def parallel_interpolate(feature_data, dates_2018, dates_2019, chunk_size=120560
     for i in tqdm(range(0, total, chunk_size), desc="Chunked Interpolation"):
         chunk = flat_pixels[i:i+chunk_size]
         results = Parallel(n_jobs=n_jobs, backend='threading')(
-            delayed(interpolate_time_series)(px, dates_2018, dates_2019)
+            delayed(interpolate_time_series)(px, dates_per_year)
             for px in chunk
         )
         all_results.extend(results)
 
-    interpolated = np.stack(all_results, axis=0).reshape(height, width, 24).astype(np.float16)
+    interpolated = np.stack(all_results, axis=0).reshape(height, width, 12 * len(dates_per_year)).astype(np.float16)
     return interpolated
+
+
 
    
 
