@@ -60,7 +60,7 @@ def interpolate_for_year(pixel_data, dates):
     valid = ~np.isnan(monthly_values)
     num_valid = np.sum(valid)
 
-    if num_valid > 3:
+    if num_valid > 5: # changed for testing with TQS data from 3 to 5
         monthly_values = np.interp(np.arange(12), np.where(valid)[0], monthly_values[valid])
         return monthly_values.astype(np.float16)
     else:

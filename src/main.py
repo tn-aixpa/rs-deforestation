@@ -173,7 +173,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
 
             changemaps = breaks.reshape(height, width)
             accuracymaps = confidence.reshape(height, width)
-            changemaps[(changemaps >= 13)] = 0
+            #changemaps[(changemaps >= 13)] = 0
             accuracymaps[changemaps == 0] = 0
 
             np.save(changemaps_path, changemaps)
@@ -190,6 +190,40 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
             updated_change_array, updated_probability_array
         )
 
+
+        # Loop over years and create year-specific outputs
+        for idx, y in enumerate(years):
+            y_int = int(y)
+
+            # Define month range for this year
+            start_month = idx * 12 + 1
+            end_month = (idx + 1) * 12
+
+            # Create masks: keep only breaks in this year's range
+            year_mask = (final_change_array >= start_month) & (final_change_array <= end_month)
+
+            # Prepare change array for this year
+            year_change = np.full_like(final_change_array, np.nan, dtype=float)
+            year_change[year_mask] = final_change_array[year_mask]
+
+            # Prepare probability array for this year (only valid where year_change is defined)
+            year_prob = np.full_like(final_probability_array, np.nan, dtype=float)
+            year_prob[year_mask] = final_probability_array[year_mask]
+
+            # Save separate GeoTIFFs
+            output_change = fm.joinpath(outpath, f"CD_{y_int}_change_{k}.tif")
+            fm.writeGeoTIFFD(output_change, year_change, geotransform, projection)
+
+            output_prob = fm.joinpath(outpath, f"CD_{y_int}_probability_{k}.tif")
+            fm.writeGeoTIFFD(output_prob, year_prob, geotransform, projection)
+
+            print(f"Saved: {output_change}")
+            print(f"Saved: {output_prob}")
+
+
+
+        '''    
+
         final_change_array = final_change_array.astype(float)
         final_probability_array = final_probability_array.astype(float)
         final_change_array[final_change_array == 0] = np.nan
@@ -198,6 +232,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
         # Save output
         output_filename_process = fm.joinpath(outpath, f"CD_{years[0]}_{k}.tif")
         fm.writeGeoTIFFD(output_filename_process, np.stack([final_change_array, final_probability_array], axis=-1), geotransform, projection)
+        '''
 
         print("Processing complete!")
         print(f"Execution time: {(time.time() - start_time) / 60:.2f} minutes")
