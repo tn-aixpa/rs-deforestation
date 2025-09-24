@@ -6,3 +6,4 @@ output
 bosco
 *.env
 src/jypter_notebook.ipynb
+src/s3_bucket_link_generator.py
