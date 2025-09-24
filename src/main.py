@@ -212,7 +212,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
 
             # Save separate GeoTIFFs
             output_change = fm.joinpath(outpath, f"CD_{y_int}_change_{k}.tif")
-            fm.writeGeoTIFFD(output_change, year_change, geotransform, projection)
+            fm.writeGeoTIFF(output_change, year_change, geotransform, projection)
 
             output_prob = fm.joinpath(outpath, f"CD_{y_int}_probability_{k}.tif")
             fm.writeGeoTIFFD(output_prob, year_prob, geotransform, projection)
