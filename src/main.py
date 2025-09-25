@@ -212,10 +212,10 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
             year_prob[year_mask & ~month_11_mask] = final_probability_array[year_mask & ~month_11_mask]
 
             # Save separate GeoTIFFs
-            output_change = outpath / f"CD_{y_int}_change.tif"
+            output_change = fm.joinpath(outpath, f"CD_{y_int}_change.tif")
             fm.writeGeoTIFF(output_change, year_change, geotransform, projection)
 
-            output_prob = outpath / f"CD_{y_int}_probability.tif"
+            output_prob = fm.joinpath(outpath, f"CD_{y_int}_probability.tif")
             fm.writeGeoTIFF(output_prob, year_prob, geotransform, projection)
 
             print(f"Saved: {output_change}")
