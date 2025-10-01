@@ -141,6 +141,7 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
         endyear = int(years[-1])
         freq = 12
         nyear = endyear - startyear
+        years_np = np.arange(startyear, endyear+1)
         dates = bfast.r_style_interval((startyear, 1), (startyear + nyear, 365), freq).reshape(fused_reshaped.shape[1], 1)
 
         changemaps_path = os.path.join(outpath, f"changemaps_year_{k}.npy")
@@ -171,69 +172,50 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
             breaks = np.concatenate(all_breaks, axis=0)
             confidence = np.concatenate(all_confidence, axis=0)
 
+            changemaps = breaks // freq
+            accuracymaps = confidence
+            changemaps = changemaps.reshape(height, width)
+            accuracymaps = accuracymaps.reshape(height, width)
+
+
             changemaps = breaks.reshape(height, width)
             accuracymaps = confidence.reshape(height, width)
-            accuracymaps[changemaps == 0] = 0
 
-            np.save(changemaps_path, changemaps)
-            np.save(accuracymaps_path, accuracymaps)
-            print(f"Saved changemaps to: {changemaps_path}")
-            print(f"Saved accuracymaps to: {accuracymaps_path}")
+            # Convert index to year
+            changemaps_year = np.zeros_like(changemaps, dtype=int)
+            for i, year in enumerate(years_np):
+                changemaps_year[changemaps == i] = year
+
+
 
         # Post-processing
         print('Start post processing:')
-        updated_change_array, updated_probability_array = pp.remove_isolated_pixels(changemaps, accuracymaps)
+        updated_change_array, updated_probability_array = pp.remove_isolated_pixels(changemaps_year, accuracymaps)
 
         print('Fill gaps and update probabilities:')
         final_change_array, final_probability_array = pp.fill_small_holes_and_update_probabilities(
             updated_change_array, updated_probability_array
         )
 
-
-        for idx, y in enumerate(years):
-            y_int = int(y)
-
-            # Define month range for this year
-            start_month = idx * 12 + 1
-            end_month = (idx + 1) * 12
-
-            # Mask for this year's changes
-            year_mask = (final_change_array >= start_month) & (final_change_array <= end_month)
-
-            # Mask for month 11 (no change)
-            month_11_mask = (final_change_array == (start_month + 10))
-
-            # Prepare change array for this year
-            year_change = np.full_like(final_change_array, np.nan, dtype=float)
-            year_change[year_mask & ~month_11_mask] = y_int
-
-            # Prepare probability array for this year
-            year_prob = np.full_like(final_probability_array, np.nan, dtype=float)
-            year_prob[year_mask & ~month_11_mask] = final_probability_array[year_mask & ~month_11_mask]
-
-            # Save separate GeoTIFFs
-            output_change = fm.joinpath(outpath, f"CD_{y_int}_change.tif")
-            fm.writeGeoTIFF(output_change, year_change, geotransform, projection)
-
-            output_prob = fm.joinpath(outpath, f"CD_{y_int}_probability.tif")
-            fm.writeGeoTIFF(output_prob, year_prob, geotransform, projection)
-
-            print(f"Saved: {output_change}")
-            print(f"Saved: {output_prob}")
-
-
-
-        '''    
-
         final_change_array = final_change_array.astype(float)
         final_probability_array = final_probability_array.astype(float)
         final_change_array[final_change_array == 0] = np.nan
         final_probability_array[final_probability_array == 0] = np.nan
 
-        # Save output
-        output_filename_process = fm.joinpath(outpath, f"CD_{years[0]}_{k}.tif")
-        fm.writeGeoTIFFD(output_filename_process, np.stack([final_change_array, final_probability_array], axis=-1), geotransform, projection)
-        '''
+        for year in years_np:
+            # Mask for change array: keep only the current year
+            output_change = np.where(final_change_array == year, final_change_array, np.nan)
+
+            # Mask for probability array: keep only where year matches
+            output_prob = np.where(final_change_array == year, final_probability_array, np.nan)
+
+
+            # Save output
+            output_change_path = fm.joinpath(outpath, f"Change_{year}_{k}.tif")
+            fm.writeGeoTIFF(output_change_path, output_change, geotransform, projection)
+
+            output_prob_path = fm.joinpath(outpath, f"Probability_{year}_{k}.tif")
+            fm.writeGeoTIFF(output_prob_path, output_prob, geotransform, projection)
 
         print("Processing complete!")
         print(f"Execution time: {(time.time() - start_time) / 60:.2f} minutes")
@@ -275,7 +257,7 @@ if __name__ == "__main__":
     zf = zipfile.ZipFile(zip_file, "w")
     for dirname, subdirs, files in os.walk(outpath):
         for filename in files:
-            if filename.endswith('.tif') or filename.endswith('.tiff') or filename.endswith('.npy') or filename.endswith('.dat') or filename.endswith('.json') :
+            if filename.endswith('.tif') or filename.endswith('.tiff'):
                 print(f"Adding {filename} to the zip file")
                 zf.write(os.path.join(dirname, filename), arcname=filename)
     zf.close()
