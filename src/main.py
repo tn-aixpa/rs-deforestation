@@ -186,9 +186,6 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
             for i, year in enumerate(years_np):
                 changemaps_year[changemaps == i] = year
 
-        output_changemaps_year = fm.joinpath(outpath, f"Changemap_{year}_{k}_beforepostprocessing.tif")
-        fm.writeGeoTIFFD(output_changemaps_year, np.stack([changemaps_year, accuracymaps], axis=-1), geotransform, projection)        
-
 
 
         # Post-processing
@@ -202,15 +199,15 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
 
         final_change_array = final_change_array.astype(float)
         final_probability_array = final_probability_array.astype(float)
-        final_change_array[final_change_array == 0] = 0
-        final_probability_array[final_probability_array == 0] = 0
+        final_change_array[final_change_array == 0] = np.nan
+        final_probability_array[final_probability_array == 0] = np.nan
 
         for year in years_np:
             # Mask for change array: keep only the current year
-            output_change = np.where(final_change_array == year, final_change_array, 0)
+            output_change = np.where(final_change_array == float(year), final_change_array, np.nan)
 
             # Mask for probability array: keep only where year matches
-            output_prob = np.where(final_change_array == year, final_probability_array, 0)
+            output_prob = np.where(final_change_array == float(year), final_probability_array, np.nan)
 
 
             # Save output
