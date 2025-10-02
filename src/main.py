@@ -172,6 +172,12 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
             breaks = np.concatenate(all_breaks, axis=0)
             confidence = np.concatenate(all_confidence, axis=0)
 
+            breaks_map = breaks.reshape(height, width)
+            confidence_map = confidence.reshape(height, width)
+
+            output_changemaps_division = fm.joinpath(outpath, f"Changemap_{year}_{k}_beforedivision.tif")
+            fm.writeGeoTIFFD(output_changemaps_division, np.stack([breaks_map, confidence_map], axis=-1), geotransform, projection) 
+
             changemaps = breaks // freq
             accuracymaps = confidence
             changemaps = changemaps.reshape(height, width)
@@ -181,10 +187,16 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
             changemaps = breaks.reshape(height, width)
             accuracymaps = confidence.reshape(height, width)
 
+            output_changemaps_year = fm.joinpath(outpath, f"Changemap_{year}_{k}_beforeassigningyears.tif")
+            fm.writeGeoTIFFD(output_changemaps_year, np.stack([changemaps, accuracymaps], axis=-1), geotransform, projection) 
+
             # Convert index to year
             changemaps_year = np.zeros_like(changemaps, dtype=int)
             for i, year in enumerate(years_np):
                 changemaps_year[changemaps == i] = year
+
+        output_changemaps_year = fm.joinpath(outpath, f"Changemap_{year}_{k}_beforepostprocessing.tif")
+        fm.writeGeoTIFFD(output_changemaps_year, np.stack([changemaps_year, accuracymaps], axis=-1), geotransform, projection)        
 
 
 
@@ -199,15 +211,15 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
 
         final_change_array = final_change_array.astype(float)
         final_probability_array = final_probability_array.astype(float)
-        final_change_array[final_change_array == 0] = np.nan
-        final_probability_array[final_probability_array == 0] = np.nan
+        final_change_array[final_change_array == 0] = 0
+        final_probability_array[final_probability_array == 0] = 0
 
         for year in years_np:
             # Mask for change array: keep only the current year
-            output_change = np.where(final_change_array == float(year), final_change_array, np.nan)
+            output_change = np.where(final_change_array == year, final_change_array, 0)
 
             # Mask for probability array: keep only where year matches
-            output_prob = np.where(final_change_array == float(year), final_probability_array, np.nan)
+            output_prob = np.where(final_change_array == year, final_probability_array, 0)
 
 
             # Save output
