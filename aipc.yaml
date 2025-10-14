@@ -60,7 +60,7 @@ operations:
       framework: aixpa
       spec:
         kind: container
-        image: ghcr.io/tn-aixpa/rs-deforestation:3.0
+        image: ghcr.io/tn-aixpa/rs-deforestation:3.8_TPS
     inputs:
       - parameters:
           - name: data_s2_deforestation

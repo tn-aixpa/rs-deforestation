@@ -6,7 +6,7 @@
 function_rs = proj.new_function(
     "elaborate",
     kind="container",
-    image="ghcr.io/tn-aixpa/rs-deforestation:3.0",
+    image="ghcr.io/tn-aixpa/rs-deforestation:3.8_TPS",
     command="/bin/bash",
     code_src="launch.sh"
     )
@@ -31,6 +31,7 @@ run_el = function_rs.run(
     }],
     args=['/shared/launch.sh', 'bosco', 'data_s2_deforestation', '[2018,2019]',  'deforestation_2018_19']
 )
+
 ```
 
 <p align="justify">As indicated in the project documentation, the pixel based analysis performed in the elaboration steps are computation heavy. The best possible performance matrix is more or less around the configuration indicated in the step above. The amount of sentinal data can vary. A safe limit volume of 250Gi is specified as persistent volume claim to ensure significant data space. The function takes around 8-9 hours to complete with 16 CPUs and 64GB Ram for 2 years of data which is the default period. The output GeoTIFF raster file CD_2018_2019.tif along with changed map files of two years are saved in the project context as an artifact (deforestation_2018_19).</p>
