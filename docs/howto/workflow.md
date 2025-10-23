@@ -99,6 +99,7 @@ def myhandler(startYear, endYear, geometry, shapeArtifactName, dataArtifactName,
                      secrets=["CDSETOOL_ESA_USER","CDSETOOL_ESA_PASSWORD"],
                      fs_group='8877',
                      args=["main.py", string_dict_data],
+                     envs=[{"name": "TMPDIR", "value": "/app/files"}],
                      volumes=[{
                         "volume_type": "persistent_volume_claim",
                         "name": "volume-deforestation",

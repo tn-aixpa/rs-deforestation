@@ -80,6 +80,7 @@ run = function_s2.run(
     fs_group='8877',
     args=["main.py", string_dict_data],
     resources={"cpu": {"requests": "3", "limits": "6"},"mem":{"requests": "32Gi", "limits": "64Gi"}},
+    envs=[{"name": "TMPDIR", "value": "/app/files"}],
     volumes=[{
         "volume_type": "persistent_volume_claim",
         "name": "volume-deforestation",
