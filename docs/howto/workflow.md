@@ -112,6 +112,7 @@ def myhandler(startYear, endYear, geometry, shapeArtifactName, dataArtifactName,
                      action="job",
                      fs_group='8877',
                      resources={"cpu": {"requests": "6", "limits": "12"},"mem":{"requests": "32Gi", "limits": "64Gi"}},
+                     envs=[{"name": "TMPDIR", "value": "/app/data"}],
                      volumes=[{
                         "volume_type": "persistent_volume_claim",
                         "name": "volume-deforestation",
