@@ -48,6 +48,8 @@ Tool usage documentation [here](./docs/usage.md).
 - [Run Deforesation Elaboration and log output ](./docs/howto/elaborate.md)
 - [Workflow](./docs/howto/workflow.md)
 
+The file "legend.qml", provided on project root must be used with the output GeoTiff Raster files for better visualizing the latter with a colormap that depends on the displacement. This file is a QGIS style file intended for use with GeoTiff Raster files that display displacement information. When a GeoTiff Raster file displaying displacement information is loaded in QGIS, the user can click on the file layer and navigate to "Style-> Load Style" in the bottom left part of the window to load "legend.qml".
+
 ## License
 
 [Apache License 2.0](./LICENSE)
