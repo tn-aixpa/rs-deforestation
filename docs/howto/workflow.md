@@ -88,39 +88,48 @@ function_rs = proj.new_function(
 ```python
 %%writefile "deforestation_pipeline.py"
 
-from digitalhub_runtime_kfp.dsl import pipeline_context
+from hera.workflows import Workflow, DAG, Parameter
+from digitalhub_runtime_hera.dsl import step
 
-def myhandler(startYear, endYear, geometry, shapeArtifactName, dataArtifactName, outputName):
-    with pipeline_context() as pc:
-        string_dict_data = """{"satelliteParams":{"satelliteType":"Sentinel2"},"startDate":\""""+ str(startYear) + """-01-01\","endDate": \"""" + str(endYear) + """-12-31\","geometry": \"""" + str(geometry) + """\","area_sampling":"true","cloudCover":"[0,5]","artifact_name":"data_s2_v2"}"""
-        s1 = pc.step(name="download",
-                     function="download_images_s2",
-                     action="job",
-                     secrets=["CDSETOOL_ESA_USER","CDSETOOL_ESA_PASSWORD"],
-                     fs_group='8877',
-                     args=["main.py", string_dict_data],
-                     envs=[{"name": "TMPDIR", "value": "/app/files"}],
-                     volumes=[{
-                        "volume_type": "persistent_volume_claim",
-                        "name": "volume-deforestation",
-                        "mount_path": "/app/files",
-                        "spec": { "size": "250Gi" }
-                        }
-                    ])
-        s2 = pc.step(name="elaborate",
-                     function="elaborate",
-                     action="job",
-                     fs_group='8877',
-                     resources={"cpu": {"requests": "6", "limits": "12"},"mem":{"requests": "32Gi", "limits": "64Gi"}},
-                     envs=[{"name": "TMPDIR", "value": "/app/data"}],
-                     volumes=[{
-                        "volume_type": "persistent_volume_claim",
-                        "name": "volume-deforestation",
-                        "mount_path": "/app/data",
-                        "spec": { "size": "250Gi" }
-                    }],
-                     args=['/shared/launch.sh', str(shapeArtifactName), 'data_s2_v2', "[" + str(startYear) + ',' + str(endYear) + "]", str(outputName)]
-                     ).after(s1)
+def pipeline():
+    # Create a new Workflow with an entrypoint DAG and a parameter
+    with Workflow(entrypoint="dag", arguments=[
+        Parameter(name="geometry"),
+        Parameter(name="outputName"),
+        Parameter(name="startYear"),
+        Parameter(name="endYear"),
+        Parameter(name="shapeArtifactName"),
+        Parameter(name="dataArtifactName")
+        ]) as w:
+        
+        with DAG(name="dag"):
+            string_dict_data = """{"satelliteParams":{"satelliteType":"Sentinel2",  "relativeOrbitNumber": "022"},"startDate":\""""+ str(w.get_parameter("startYear")) + """-01-01\","endDate": \"""" + str(w.get_parameter("endYear")) + """-12-31\","geometry": \"""" + str(w.get_parameter("geometry")) + """\","area_sampling":"true","cloudCover":"[0,5]","artifact_name": \"""" + str(w.get_parameter("dataArtifactName")) + """\"}"""          
+             
+            s1 = step(template={"action":"job",
+                           "args":["main.py", string_dict_data], 
+                           "secrets":["CDSETOOL_ESA_USER","CDSETOOL_ESA_PASSWORD"], 
+                           "fs_group":"8877", 
+                           "resources":{"mem": "32Gi", "cpu": "6"}, 
+                           "envs":[{"name": "TMPDIR", "value": "/app/files"}], 
+                           "volumes":[{"volume_type": "persistent_volume_claim","name": "volume-flood","mount_path": "/app/files","spec": { "size": "300Gi" }}]}, 
+                 function="download_images_s2", 
+                 name="download"
+                 )
+             
+            s2 = step(template={"action":"job",
+                           "args": ['/shared/launch.sh', str(w.get_parameter("shapeArtifactName")), str(w.get_parameter("dataArtifactName")), "[" + str(w.get_parameter("startYear")) + ',' + str(w.get_parameter("endYear")) + "]", str(w.get_parameter("outputName"))],
+                           "fs_group":"8877",
+                           "resources":{"cpu": "6","mem":"32Gi"},
+                           "envs":[{"name": "TMPDIR", "value": "/app/data"}],
+                           "volumes":[{"volume_type": "persistent_volume_claim", "name": "volume-deforestation","mount_path": "/app/data","spec": { "size": "250Gi" }}]},
+                 function="elaborate",
+                 name="elaborate"
+                 )
+            
+            s1 >> s2
+             
+    return w    
+
 ```
 
 There is a committed version of this file on the repo.
@@ -132,15 +141,15 @@ There is a committed version of this file on the repo.
 ```python
 workflow = proj.new_workflow(
 name="pipeline_deforestation",
-kind="kfp",
+kind="hera",
 code_src="git+https://<username>:<personal_access_token>@github.com/tn-aixpa/rs-deforestation",
-handler="src.deforestation_pipeline:myhandler")
+handler="src.deforestation_pipeline:pipeline")
 ```
 
 <p align="justify">If you want to modify the pipeline source code, either update the existing version on github repo or register the pipeline with local version of python source file generated in prevous step for e.g. the value of parameter 'dataArtifactName' is optional and set to 'data_s2_v2' in committed version on project repo. If you want to log it with different name inside to the DH platform project, create/update the pipeline code locally by replacing the string with parameter followed by the registration as shown below.</p>
 
 ```python
-workflow = proj.new_workflow(name="pipeline_deforestation", kind="kfp", code_src= "deforestation_pipeline.py", handler = "myhandler")
+workflow = proj.new_workflow(name="pipeline_deforestation", kind="hera", code_src= "deforestation_pipeline.py", handler = "pipeline")
 ```
 
 ## 7. Build workflow
@@ -154,9 +163,9 @@ After the build, the pipeline specification and configuration is displayed as th
 
 ```python
 {
-    'task': 'kfp+pipeline://deforestation/ed9a9f8941af4cdab2715048b0902dc3',
+    'task': 'hera+pipeline://deforestation/ed9a9f8941af4cdab2715048b0902dc3',
     'local_execution': False,
-    'workflow': 'kfp://deforestation/pipeline_deforestation:32c08ce786d041ae8617089ee390e91a',
+    'workflow': 'hera://deforestation/pipeline_deforestation:32c08ce786d041ae8617089ee390e91a',
     ...
   }
 ```
