@@ -54,7 +54,7 @@ secret1 = proj.new_secret(name="CDSETOOL_ESA_PASSWORD", secret_value="esa_passwo
 function_s2 = proj.new_function(
     "download_images_s2",
     kind="container",
-    image="ghcr.io/tn-aixpa/sentinel-tools:0.11.6",
+    image="ghcr.io/tn-aixpa/sentinel-tools:0.11.7",
     command="python")
 ```
 
