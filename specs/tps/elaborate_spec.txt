@@ -1,0 +1,29 @@
+args:
+  - /shared/launch.sh
+  - bosco
+  - data_s2_2018_19_tps
+  - "[2018,2019]"
+  - deforestation_2018_19_tps
+image: ghcr.io/tn-aixpa/rs-deforestation:0.14.6
+task: container+job://deforestation/6c7cc68bc6af48cfb7e08b0172c8d77c
+function: container://deforestation/elaborate:b16ab30918d14dfc96354c8aa067ec44
+volumes:
+  - name: volume-deforestation
+    spec:
+      size: 250Gi
+    volume_type: persistent_volume_claim
+    mount_path: /app/data
+resources:
+  cpu:
+    requests: "6"
+    limits: "12"
+  mem:
+    requests: 32Gi
+    limits: 64Gi
+source:
+  source: launch.sh
+  base64: IyEvYmluL2Jhc2gKbHMgLWxhIC9zaGFyZWQKY2Qgfgpwd2QKc291cmNlIC5iYXNocmMKZWNobyAiR0RBTCB2ZXJzaW9uOiIKZ2RhbC1jb25maWcgLS12ZXJzaW9uCnB5dGhvbiAtLXZlcnNpb24KZWNobyAiR0RBTCBEQVRBOiIKZWNobyAkR0RBTF9EQVRBCmVjaG8gIlBST0pfTElCIgplY2hvICRQUk9KX0xJQgpjZCAvYXBwCmVjaG8gInsnc2hhcGVBcnRpZmFjdE5hbWUnOiAnJDEnLCAnZGF0YUFydGlmYWN0TmFtZSc6ICckMicsICd5ZWFycyc6JDMsICdvdXRwdXRBcnRpZmFjdE5hbWUnOiAnJDQnfSIKZXhwb3J0IFBST0pfTElCPS9ob21lL25vbnJvb3QvbWluaWZvcmdlMy9zaGFyZS9wcm9qCmV4cG9ydCBHREFMX0RBVEE9L2hvbWUvbm9ucm9vdC9taW5pZm9yZ2UzL3NoYXJlL2dkYWwKI2V4cG9ydCBQQVRIPSIvaG9tZS9ub25yb290L21pbmlmb3JnZTMvc25hcC8uc25hcC9hdXhkYXRhL2dkYWwvZ2RhbC0zLTAtMC9iaW4vOiRQQVRIIgplY2hvICJHREFMIERBVEEgQUZURVIgRVhQT1JUOiIKZWNobyAkR0RBTF9EQVRBCmVjaG8gIlBST0pfTElCIEFGVEVSIEVYUE9SVCIKZWNobyAkUFJPSl9MSUIKcHl0aG9uIG1haW4ucHkgInsnc2hhcGVBcnRpZmFjdE5hbWUnOiAnJDEnLCAnZGF0YUFydGlmYWN0TmFtZSc6ICckMicsICd5ZWFycyc6JDMsICdvdXRwdXRBcnRpZmFjdE5hbWUnOiAnJDQnfSIKZXhpdA==
+fs_group: 8877
+command: /bin/bash
+local_execution: false
+

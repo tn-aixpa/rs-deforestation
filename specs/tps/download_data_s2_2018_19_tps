@@ -1,0 +1,25 @@
+args:
+  - main.py
+  - '{"satelliteParams":{"satelliteType":"Sentinel2",  "relativeOrbitNumber":
+    "022"},"startDate":"2018-01-01","endDate": "2019-12-31","geometry":
+    "POLYGON((10.968432350469937 46.093829019481056,10.968432350469937
+    46.09650743619973, 10.97504139531014 46.09650743619973,10.97504139531014
+    46.093829019481056, 10.968432350469937
+    46.093829019481056))","area_sampling":"true","cloudCover":"[0,5]","artifact_name":
+    "data_s2_2018_19_tps"}'
+image: ghcr.io/tn-aixpa/sentinel-tools:0.14.6
+task: container+job://deforestation/2214f18470b044d6b5ab853f7f2848ab
+function: container://deforestation/download_images_s2:8bbcc2bd1a22475ca5cc2afcb98a65bf
+volumes:
+  - name: volume-deforestation
+    spec:
+      size: 250Gi
+    volume_type: persistent_volume_claim
+    mount_path: /app/files
+fs_group: 8877
+secrets:
+  - CDSETOOL_ESA_USER
+  - CDSETOOL_ESA_PASSWORD
+command: python
+local_execution: false
+
