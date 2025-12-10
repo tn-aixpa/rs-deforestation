@@ -184,8 +184,8 @@ def deforestation(sensor, years, maindir, boscopath, datapath, outpath):
             for i, year in enumerate(years_np):
                 changemaps_year[changemaps == i] = year
 
-        output_changemaps_year = fm.joinpath(outpath, f"Changemap_{k}_beforepostprocessing.tif")
-        fm.writeGeoTIFFD(output_changemaps_year, np.stack([changemaps_year, accuracymaps], axis=-1), geotransform, projection)        
+        # output_changemaps_year = fm.joinpath(outpath, f"Changemap_{k}_beforepostprocessing.tif")
+        # fm.writeGeoTIFFD(output_changemaps_year, np.stack([changemaps_year, accuracymaps], axis=-1), geotransform, projection)        
 
 
 
