@@ -22,7 +22,7 @@ The function aims at downloading all the deforestation inputs from project conte
 run_el = function_rs.run(
     action="job",
     fs_group='8877',
-    resources={"cpu": {"requests": "6", "limits": "12"},"mem":{"requests": "32Gi", "limits": "64Gi"}},
+    resources={"cpu": "12", "mem": "64Gi"},
     envs=[{"name": "TMPDIR", "value": "/app/files"}],
     volumes=[{
         "volume_type": "persistent_volume_claim",
